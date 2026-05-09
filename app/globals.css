@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 42 46% 97%;
+  --foreground: 210 34% 13%;
+  --muted: 38 34% 92%;
+  --muted-foreground: 220 10% 42%;
+  --border: 36 28% 84%;
+  --input: 36 28% 84%;
+  --ring: 168 68% 28%;
+  --card: 0 0% 100%;
+  --card-foreground: 210 34% 13%;
+  --primary: 166 72% 28%;
+  --primary-foreground: 44 55% 96%;
+  --accent: 35 95% 58%;
+  --accent-foreground: 210 34% 13%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html {
+  min-height: 100%;
+  background: hsl(var(--background));
+}
+
+body {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 15% 0%, rgb(16 185 129 / 0.12), transparent 30rem),
+    radial-gradient(circle at 85% 12%, rgb(245 158 11 / 0.10), transparent 26rem),
+    linear-gradient(180deg, hsl(var(--background)) 0%, #fffdf8 46%, hsl(var(--background)) 100%);
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(20 184 166 / 0.22);
+}
+
+@layer base {
+  a {
+    @apply underline-offset-4;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .premium-grid {
+    background-image:
+      linear-gradient(rgb(20 83 45 / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(20 83 45 / 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+}

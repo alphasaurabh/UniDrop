@@ -1,0 +1,26 @@
+import { forwardRef, type InputHTMLAttributes } from "react";
+
+import { cn } from "@/lib/utils";
+
+export type InputProps = InputHTMLAttributes<HTMLInputElement>;
+
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type = "text", ...props }, ref) => {
+    return (
+      <input
+        ref={ref}
+        type={type}
+        className={cn(
+          "h-12 w-full rounded-2xl border border-input bg-card/85 px-4 text-sm text-foreground shadow-sm backdrop-blur transition-colors",
+          "placeholder:text-muted-foreground/70",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+);
+
+Input.displayName = "Input";
