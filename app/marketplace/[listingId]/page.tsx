@@ -99,7 +99,7 @@ export default async function ListingDetailPage({
           <Card className="p-6">
             <div className="mb-4 flex flex-wrap gap-2">
               <Badge>{listing.condition}</Badge>
-              <Badge variant="soft">{listing.category}</Badge>
+              <Badge variant="soft">{listing.category?.name ?? listing.category_id}</Badge>
               {listing.negotiable ? <Badge variant="soft">Negotiable</Badge> : null}
             </div>
             <h1 className="text-3xl font-semibold tracking-tight">{listing.title}</h1>
@@ -108,16 +108,16 @@ export default async function ListingDetailPage({
             <div className="mt-6 space-y-3 text-sm text-muted-foreground">
               <p className="flex items-center gap-2">
                 <MapPin className="size-4 text-primary" />
-                {listing.location}
+                Campus pickup
               </p>
               <p className="flex items-center gap-2">
                 <CalendarDays className="size-4 text-primary" />
                 Posted {formatPostedTime(listing.created_at)}
               </p>
-              <p className="flex items-center gap-2">
-                <MessageCircle className="size-4 text-primary" />
-                Prefers {listing.contact_preference}
-              </p>
+                <p className="flex items-center gap-2">
+                  <MessageCircle className="size-4 text-primary" />
+                  Contact via CampusLoop
+                </p>
             </div>
 
             <form action={toggleSaveListing.bind(null, listing.id, isSaved)} className="mt-6">

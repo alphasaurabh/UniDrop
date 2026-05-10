@@ -79,9 +79,9 @@ export function ListingCard({
         <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
           <span className="inline-flex min-w-0 items-center gap-1.5">
             <MapPin className="size-4 shrink-0" />
-            <span className="truncate">{listing.location}</span>
+            <span className="truncate">Campus pickup</span>
           </span>
-          <span className="shrink-0">{listing.category}</span>
+          <span className="shrink-0">{listing.category?.name ?? listing.category_id}</span>
         </div>
         <form action={toggleSaveListing.bind(null, listing.id, Boolean(listing.isSaved))}>
           <Button type="submit" variant="outline" size="sm" className="w-full">

@@ -6,7 +6,9 @@ import { useTransition } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { LISTING_CATEGORIES, LISTING_CONDITIONS } from "@/features/marketplace/constants";
+import { LISTING_CONDITIONS } from "@/features/marketplace/constants";
+
+type Category = { id: string; name: string };
 
 function updateParams(params: URLSearchParams, key: string, value: string) {
   if (!value || value === "all" || (key === "sort" && value === "newest")) {
@@ -16,7 +18,11 @@ function updateParams(params: URLSearchParams, key: string, value: string) {
   }
 }
 
-export function MarketplaceFilters() {
+type MarketplaceFiltersProps = {
+  categories?: Category[];
+};
+
+export function MarketplaceFilters({ categories }: MarketplaceFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -46,8 +52,10 @@ export function MarketplaceFilters() {
           aria-label="Category"
         >
           <option value="all">All categories</option>
-          {LISTING_CATEGORIES.map((category) => (
-            <option key={category}>{category}</option>
+          {(categories ?? []).map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
           ))}
         </Select>
         <Select

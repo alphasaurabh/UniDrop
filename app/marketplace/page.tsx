@@ -26,10 +26,13 @@ type MarketplacePageProps = {
 export default async function MarketplacePage({ searchParams }: MarketplacePageProps) {
   const params = await searchParams;
   const supabase = await createClient();
-  const [listings, savedIds] = await Promise.all([
+  const [listings, savedIds, categories] = await Promise.all([
     getListings(supabase, params),
     getSavedListingIds(supabase),
+    // fetch categories from DB
+    supabase.from("categories").select("id,name").order("name", { ascending: true }),
   ]);
+  const categoryRows = (categories.data ?? []) as { id: string; name: string }[];
   const hydratedListings = listings.map((listing) => ({
     ...listing,
     isSaved: savedIds.has(listing.id),
@@ -59,7 +62,7 @@ export default async function MarketplacePage({ searchParams }: MarketplacePageP
         </Button>
       </div>
 
-      <MarketplaceFilters />
+      <MarketplaceFilters categories={categoryRows} />
 
       {hydratedListings.length > 0 ? (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">

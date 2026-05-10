@@ -8,11 +8,7 @@ import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import {
-  CONTACT_PREFERENCES,
-  LISTING_CATEGORIES,
-  LISTING_CONDITIONS,
-} from "@/features/marketplace/constants";
+import { LISTING_CONDITIONS } from "@/features/marketplace/constants";
 import type { Listing } from "@/features/marketplace/types";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +16,7 @@ type ListingFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   listing?: Listing;
   error?: string;
+  categories?: { id: string; name: string }[];
 };
 
 type PreviewImage = {
@@ -39,7 +36,7 @@ function PublishButton({ isEditing }: { isEditing: boolean }) {
   );
 }
 
-export function ListingForm({ action, listing, error }: ListingFormProps) {
+export function ListingForm({ action, listing, error, categories }: ListingFormProps) {
   const [previews, setPreviews] = useState<PreviewImage[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
   const existingImages = useMemo(() => {
@@ -147,21 +144,15 @@ export function ListingForm({ action, listing, error }: ListingFormProps) {
             </label>
             <label>
               <span className="mb-2 block text-sm font-medium">Category</span>
-              <Select name="category" defaultValue={listing?.category ?? "Electronics"} required>
-                {LISTING_CATEGORIES.map((category) => (
-                  <option key={category}>{category}</option>
-                ))}
-              </Select>
-            </label>
-            <label>
-              <span className="mb-2 block text-sm font-medium">Hostel / location</span>
-              <Input name="location" defaultValue={listing?.location} placeholder="Hostel C, Library gate..." required />
-            </label>
-            <label>
-              <span className="mb-2 block text-sm font-medium">Contact preference</span>
-              <Select name="contactPreference" defaultValue={listing?.contact_preference ?? "Chat"} required>
-                {CONTACT_PREFERENCES.map((preference) => (
-                  <option key={preference}>{preference}</option>
+              <Select
+                name="category"
+                defaultValue={listing?.category?.id ?? categories?.[0]?.id ?? ""}
+                required
+              >
+                {(categories ?? []).map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
                 ))}
               </Select>
             </label>

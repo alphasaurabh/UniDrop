@@ -4,12 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
-  CONTACT_PREFERENCES,
-  LISTING_CATEGORIES,
   LISTING_CONDITIONS,
   LISTING_IMAGE_BUCKET,
-  isContactPreference,
-  isListingCategory,
   isListingCondition,
 } from "@/features/marketplace/constants";
 import { createClient } from "@/lib/supabase/server";
@@ -17,12 +13,9 @@ import { createClient } from "@/lib/supabase/server";
 type ValidListingInput = {
   title: string;
   description: string;
-  category: string;
+  category: string; // holds category_id (UUID) from existing schema
   condition: string;
   price: number;
-  location: string;
-  contact_preference: string;
-  negotiable: boolean;
 };
 
 type ListingValidationResult =
@@ -71,10 +64,6 @@ function validateListing(
   const category = getString(formData, "category");
   const condition = getString(formData, "condition");
   const price = parsePrice(getString(formData, "price"));
-  const location = getString(formData, "location");
-  const contactPreference = getString(formData, "contactPreference");
-  const negotiable = formData.get("negotiable") === "on";
-
   if (title.length < 4) {
     return { status: "error", message: "Use a clear product title with at least 4 characters." };
   }
@@ -83,8 +72,8 @@ function validateListing(
     return { status: "error", message: "Add a description with at least 20 characters." };
   }
 
-  if (!isListingCategory(category)) {
-    return { status: "error", message: `Choose one of: ${LISTING_CATEGORIES.join(", ")}.` };
+  if (!category) {
+    return { status: "error", message: "Choose a category." };
   }
 
   if (!isListingCondition(condition)) {
@@ -93,14 +82,6 @@ function validateListing(
 
   if (!Number.isFinite(price) || price < 0) {
     return { status: "error", message: "Enter a valid price." };
-  }
-
-  if (location.length < 2) {
-    return { status: "error", message: "Add your hostel or campus pickup location." };
-  }
-
-  if (!isContactPreference(contactPreference)) {
-    return { status: "error", message: `Choose one of: ${CONTACT_PREFERENCES.join(", ")}.` };
   }
 
   if (requireImage && images.length === 0) {
@@ -125,9 +106,6 @@ function validateListing(
       category,
       condition,
       price,
-      location,
-      contact_preference: contactPreference,
-      negotiable,
     },
   };
 }
@@ -158,7 +136,7 @@ async function uploadListingImages(
     rows.push({
       listing_id: listingId,
       storage_path: path,
-      sort_order: startOrder + index,
+      display_order: startOrder + index,
     });
   }
 
@@ -185,7 +163,11 @@ export async function createListing(formData: FormData) {
   const { data: listing, error } = await supabase
     .from("listings")
     .insert({
-      ...validation.data,
+      title: validation.data.title,
+      description: validation.data.description,
+      category_id: validation.data.category,
+      condition: validation.data.condition,
+      price: validation.data.price,
       seller_id: user.id,
       status: "active",
     })
@@ -256,7 +238,13 @@ export async function updateListing(listingId: string, formData: FormData) {
 
   const { error } = await supabase
     .from("listings")
-    .update(listingInput)
+    .update({
+      title: listingInput.title,
+      description: listingInput.description,
+      category_id: listingInput.category,
+      condition: listingInput.condition,
+      price: listingInput.price,
+    })
     .eq("id", listingId)
     .eq("seller_id", user.id);
 
@@ -315,7 +303,6 @@ export async function markListingSold(listingId: string) {
     .from("listings")
     .update({
       status: "sold",
-      sold_at: new Date().toISOString(),
     })
     .eq("id", listingId)
     .eq("seller_id", user.id);

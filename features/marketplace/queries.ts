@@ -25,32 +25,35 @@ const listingSelect = `
   seller_id,
   title,
   description,
-  category,
+  category_id,
   condition,
   price,
-  negotiable,
-  location,
-  contact_preference,
   status,
   created_at,
   updated_at,
-  sold_at,
   seller:profiles!listings_seller_id_fkey(
     id,
     username,
     full_name,
     avatar_url
   ),
+  category:categories!listings_category_id_fkey(
+    id,
+    name
+  ),
   images:listing_images(
     id,
     listing_id,
-    storage_path,
-    sort_order
+    display_order
   )
 `;
 
 function getSeller(seller: RawListing["seller"]) {
   return Array.isArray(seller) ? seller[0] ?? null : seller;
+}
+
+function getCategory(category: RawListing["category"]) {
+  return Array.isArray(category) ? category[0] ?? null : category;
 }
 
 function withPublicImageUrls(supabase: SupabaseLike, listing: RawListing): Listing {
@@ -59,14 +62,20 @@ function withPublicImageUrls(supabase: SupabaseLike, listing: RawListing): Listi
   return {
     ...listing,
     seller: getSeller(listing.seller),
+    category: getCategory(listing.category),
     images: images
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map((image) => ({
-        ...image,
-        publicUrl: supabase.storage
-          .from(LISTING_IMAGE_BUCKET)
-          .getPublicUrl(image.storage_path).data.publicUrl,
-      })),
+      .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+      .map((image) => {
+        const publicUrl = image.storage_path
+          ? supabase.storage.from(LISTING_IMAGE_BUCKET).getPublicUrl(image.storage_path).data.publicUrl
+          : "";
+
+        return {
+          ...image,
+          display_order: image.display_order ?? 0,
+          publicUrl,
+        };
+      }),
   };
 }
 
@@ -81,11 +90,11 @@ export async function getListings(
 
   if (filters.q) {
     const search = filters.q.replace(/[%_,]/g, "");
-    query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,location.ilike.%${search}%`);
+    query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
   }
 
   if (filters.category && filters.category !== "all") {
-    query = query.eq("category", filters.category);
+    query = query.eq("category_id", filters.category);
   }
 
   if (filters.condition && filters.condition !== "all") {
@@ -207,7 +216,7 @@ export async function getRelatedListings(
     .from("listings")
     .select(listingSelect)
     .eq("status", "active")
-    .eq("category", listing.category)
+    .eq("category_id", listing.category_id)
     .neq("id", listing.id)
     .order("created_at", { ascending: false })
     .limit(limit);

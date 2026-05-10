@@ -1,6 +1,4 @@
 import type {
-  ContactPreference,
-  ListingCategory,
   ListingCondition,
 } from "@/features/marketplace/constants";
 
@@ -10,7 +8,7 @@ export type ListingImage = {
   id: string;
   listing_id: string;
   storage_path: string;
-  sort_order: number;
+  display_order: number;
   publicUrl: string;
 };
 
@@ -26,16 +24,17 @@ export type Listing = {
   seller_id: string;
   title: string;
   description: string;
-  category: ListingCategory;
+  category_id: string;
+  category?: {
+    id: string;
+    name: string;
+  } | null;
   condition: ListingCondition;
   price: number;
-  negotiable: boolean;
-  location: string;
-  contact_preference: ContactPreference;
+  negotiable?: boolean;
   status: ListingStatus;
   created_at: string;
   updated_at: string;
-  sold_at: string | null;
   seller: ListingSeller | null;
   images: ListingImage[];
   isSaved?: boolean;

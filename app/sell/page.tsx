@@ -1,6 +1,7 @@
 import { Sparkles } from "lucide-react";
 
 import { ListingForm } from "@/components/marketplace/listing-form";
+import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { createListing } from "@/features/marketplace/actions";
@@ -17,6 +18,8 @@ type SellPageProps = {
 
 export default async function SellPage({ searchParams }: SellPageProps) {
   const params = await searchParams;
+  const supabase = await createClient();
+  const { data: categories } = await supabase.from("categories").select("id,name").order("name", { ascending: true });
 
   return (
     <Container className="py-8">
@@ -33,7 +36,7 @@ export default async function SellPage({ searchParams }: SellPageProps) {
         </p>
       </div>
 
-      <ListingForm action={createListing} error={params.error} />
+      <ListingForm action={createListing} error={params.error} categories={(categories ?? []) as { id: string; name: string }[]} />
     </Container>
   );
 }
