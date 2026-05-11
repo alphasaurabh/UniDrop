@@ -125,7 +125,7 @@ export const categories = [
 
 export const testimonials = [
   {
-    quote: "CampusLoop made buying a laptop from another student feel safer than any random marketplace.",
+    quote: "UniDrop made buying a laptop from another student feel safer than any random marketplace.",
     name: "Avery",
     detail: "Computer Science sophomore",
   },

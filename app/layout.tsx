@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Manrope, Sora } from "next/font/google";
 
 import { Navbar } from "@/components/layout/navbar";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ToastProvider } from "@/components/ui/toast";
+import { GlobalBackground } from "@/components/ui/global-background";
 import "./globals.css";
 
 const bodyFont = Manrope({
@@ -16,10 +19,10 @@ const displayFont = Sora({
 
 export const metadata: Metadata = {
   title: {
-    default: "CampusLoop",
-    template: "%s | CampusLoop",
+    default: "UniDrop",
+    template: "%s | UniDrop",
   },
-  description: "A college marketplace for buying and selling on campus.",
+  description: "Modern campus marketplace for buying and selling within student communities.",
 };
 
 export default function RootLayout({
@@ -28,12 +31,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${bodyFont.variable} ${displayFont.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${bodyFont.variable} ${displayFont.variable}`}>
       <body className="font-sans antialiased">
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1 pb-20 lg:pb-0">{children}</main>
-        </div>
+        <ThemeProvider>
+          <ToastProvider>
+            <GlobalBackground />
+            <div className="relative z-10 flex min-h-screen flex-col">
+              <Navbar />
+              <main className="flex-1 pb-safe-bottom lg:pb-0">{children}</main>
+            </div>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

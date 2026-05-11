@@ -213,7 +213,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
       allowNativeSubmitRef.current = true;
       form.requestSubmit();
     } catch (submitError) {
-      setLocalError(submitError instanceof Error ? submitError.message : "CampusLoop could not upload your images.");
+      setLocalError(submitError instanceof Error ? submitError.message : "UniDrop could not upload your images.");
     } finally {
       setIsUploading(false);
     }
@@ -494,6 +494,14 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
           </div>
         </div>
       </aside>
+      {/* Mobile sticky publish bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+        <div className="glass-nav pb-safe-bottom px-4 py-3">
+          <div className="mx-auto max-w-3xl">
+            <PublishButton isEditing={Boolean(listing)} />
+          </div>
+        </div>
+      </div>
     </motion.form>
   );
 }

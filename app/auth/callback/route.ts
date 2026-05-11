@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.redirect(
         new URL(
-          "/login?error=CampusLoop could not verify your session.",
+          "/login?error=UniDrop could not verify your session.",
           request.url,
         ),
       );
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
           `/login?error=${encodeURIComponent(
             profileError instanceof Error
               ? profileError.message
-              : "Only verified Gautam Buddha University students can access CampusLoop.",
+              : "Only verified Gautam Buddha University students can access UniDrop.",
           )}`,
           request.url,
         ),

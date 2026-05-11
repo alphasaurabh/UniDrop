@@ -141,7 +141,7 @@ export async function signupWithState(
   if (!activeCollege?.id) {
     return {
       status: "error",
-      message: "CampusLoop could not find an active approved college for this email domain.",
+      message: "UniDrop could not find an active approved college for this email domain.",
     };
   }
 
@@ -186,7 +186,7 @@ export async function signupWithState(
         message:
           profileError instanceof Error
             ? profileError.message
-            : "CampusLoop could not create your profile.",
+            : "UniDrop could not create your profile.",
       };
     }
 
@@ -205,7 +205,7 @@ export async function signupWithState(
 
   return {
     status: "error",
-    message: "CampusLoop could not create your account. Please try again.",
+    message: "UniDrop could not create your account. Please try again.",
   };
 }
 
@@ -216,7 +216,7 @@ export async function signup(formData: FormData) {
     redirect(`/login?message=${encodedError(state.message ?? "Check your email to confirm your account.")}`);
   }
 
-  redirectWithError("/signup", state.message ?? "CampusLoop could not create your account.");
+  redirectWithError("/signup", state.message ?? "UniDrop could not create your account.");
 }
 
 export async function signInWithGoogle(formData: FormData) {

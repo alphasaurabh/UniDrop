@@ -7,6 +7,10 @@ import {
   ShieldCheck,
   Sparkles,
   TrendingUp,
+  Mail,
+  Linkedin,
+  Github,
+  Globe,
 } from "lucide-react";
 
 import { FadeIn } from "@/components/motion/fade-in";
@@ -14,8 +18,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
+import { ActivityFeed } from "@/components/activity/activity-feed";
 import { LISTING_CATEGORIES } from "@/features/marketplace/constants";
-import { testimonials } from "@/lib/demo-data";
+import { createClient } from "@/lib/supabase/server";
 
 const trustItems = [
   {
@@ -35,7 +40,24 @@ const trustItems = [
   },
 ];
 
-export default function HomePage() {
+async function getTotalActiveListings() {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("listings")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active");
+
+  if (error) {
+    return 0;
+  }
+
+  return count ?? 0;
+}
+
+export default async function HomePage() {
+  const totalActiveListings = await getTotalActiveListings();
+
   return (
     <>
       <section className="relative overflow-hidden pt-8 sm:pt-12">
@@ -48,10 +70,10 @@ export default function HomePage() {
                 Premium campus marketplace
               </Badge>
               <h1 className="font-display text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl lg:text-[5.25rem] lg:leading-[0.95]">
-                A calmer way to buy, sell, and discover on campus.
+                Buy. Sell. Repeat.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-                CampusLoop is a beautifully minimal student marketplace with the trust, polish, and mobility of a premium consumer product.
+                UniDrop is a beautifully minimal student marketplace with the trust, polish, and feel of a premium social app.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -97,15 +119,17 @@ export default function HomePage() {
                         <span>Momentum</span>
                         <TrendingUp className="size-4 text-primary" />
                       </div>
-                      <p className="mt-5 font-display text-4xl font-semibold tracking-tight">128</p>
-                      <p className="mt-1 text-sm text-muted-foreground">live items this week</p>
+                      <p className="mt-5 font-display text-4xl font-semibold tracking-tight">{totalActiveListings}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        total active {totalActiveListings === 1 ? "listing" : "listings"}
+                      </p>
                     </div>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="rounded-[1.2rem] border border-border/70 bg-card/80 p-4 shadow-soft backdrop-blur-xl">
                       <div className="flex items-start gap-4">
-                        <div className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+                        <div className="grid size-12 place-items-center text-primary">
                           <Camera className="size-5" />
                         </div>
                         <div>
@@ -116,7 +140,7 @@ export default function HomePage() {
                     </div>
                     <div className="rounded-[1.2rem] border border-border/70 bg-card/80 p-4 shadow-soft backdrop-blur-xl">
                       <div className="flex items-start gap-4">
-                        <div className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+                        <div className="grid size-12 place-items-center text-primary">
                           <PackageCheck className="size-5" />
                         </div>
                         <div>
@@ -217,16 +241,21 @@ export default function HomePage() {
 
       <section className="py-8 sm:py-12">
         <Container>
-          <div className="grid gap-5 lg:grid-cols-3">
-            {testimonials.map((testimonial, index) => (
-              <FadeIn key={testimonial.name} delay={index * 0.08}>
-                <Card className="h-full p-7">
-                  <p className="text-lg leading-8 text-foreground/90">“{testimonial.quote}”</p>
-                  <p className="mt-6 font-semibold">{testimonial.name}</p>
-                  <p className="text-sm text-muted-foreground">{testimonial.detail}</p>
-                </Card>
-              </FadeIn>
-            ))}
+          <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr]">
+            <FadeIn>
+              <div className="lg:sticky lg:top-28">
+                <Badge variant="soft" className="mb-4 rounded-full px-4 py-2">Campus activity</Badge>
+                <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Real students, real feedback, real marketplace momentum.
+                </h2>
+                <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">
+                  See what's happening on UniDrop right now. Listings, sales, and community feedback from verified students.
+                </p>
+              </div>
+            </FadeIn>
+            <div>
+              <ActivityFeed limit={6} />
+            </div>
           </div>
         </Container>
       </section>
@@ -239,14 +268,14 @@ export default function HomePage() {
                 <div>
                   <Badge variant="soft" className="mb-4 rounded-full px-4 py-2">Ready for launch</Badge>
                   <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-5xl">
-                    CampusLoop should feel premium the moment it opens.
+                    UniDrop should feel premium the moment it opens.
                   </h2>
                   <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
                     This is a focused marketplace for real student exchange, rebuilt to feel calm, trustworthy, and launch-ready.
                   </p>
                 </div>
                 <Button asChild href="/signup" size="lg">
-                  Join CampusLoop
+                  Join UniDrop
                 </Button>
               </div>
             </div>
@@ -254,10 +283,60 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <footer className="border-t border-border/70 py-8">
-        <Container className="flex flex-col justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
-          <p>CampusLoop · Premium college marketplace</p>
-          <p>Built for campus trust and polished mobile-first browsing.</p>
+      <footer className="border-t border-border/70 py-10">
+        <Container>
+          <div className="grid gap-8 sm:grid-cols-3">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-primary-foreground shadow-soft">UD</span>
+                <div>
+                  <p className="font-display text-lg font-semibold">UniDrop</p>
+                  <p className="text-sm text-muted-foreground">Premium campus marketplace</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">Built for campus trust and polished mobile-first browsing.</p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold">Quick links</h3>
+              <ul className="grid gap-2 text-sm text-muted-foreground">
+                <li><a href="/marketplace" className="hover:underline">Marketplace</a></li>
+                <li><a href="/sell" className="hover:underline">Sell</a></li>
+                <li><a href="/saved" className="hover:underline">Saved</a></li>
+                <li><a href="/account" className="hover:underline">Account</a></li>
+                <li><a href="/terms" className="hover:underline">Terms &amp; Conditions</a></li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold">About the Creator</h3>
+              <p className="text-sm text-muted-foreground">UniDrop was created by Saurabh Chandravanshi. Built to make campus buying and selling simpler, safer, and more modern for students.</p>
+
+              <h4 className="mt-3 text-sm font-semibold">Connect</h4>
+              <div className="flex flex-wrap items-center gap-3">
+                <a href="mailto:chandravanshisaurabh25@gmail.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:underline">
+                  <Mail className="size-4" /> chandravanshisaurabh25@gmail.com
+                </a>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <a href="https://www.linkedin.com/in/chandravanshisaurabh/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                  <Linkedin className="size-5" />
+                </a>
+                <a href="https://github.com/alphasaurabh" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                  <Github className="size-5" />
+                </a>
+                <a href="https://www.saurabhdev.me" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                  <Globe className="size-5" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t border-border/50 pt-6 text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p>© {new Date().getFullYear()} UniDrop. Crafted by Saurabh Chandravanshi.</p>
+            <p className="text-xs text-muted-foreground">UniDrop is a student marketplace platform. All transactions occur between users.</p>
+          </div>
         </Container>
       </footer>
     </>

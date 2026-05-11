@@ -109,7 +109,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </SubmitButton>
         </form>
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          New to CampusLoop?{" "}
+          New to UniDrop?{" "}
           <Link className="font-medium text-primary hover:underline" href="/signup">
             Create an account
           </Link>

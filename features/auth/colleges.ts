@@ -8,10 +8,10 @@ export type ApprovedCollege = {
 };
 
 export const COLLEGE_DOMAIN_ERROR_MESSAGE =
-  "CampusLoop currently accepts only approved Gautam Buddha University email domains.";
+  "UniDrop currently accepts only approved Gautam Buddha University email domains.";
 
 export const ACTIVE_COLLEGE_LOOKUP_ERROR_MESSAGE =
-  "CampusLoop could not find an active approved college for this email domain.";
+  "UniDrop could not find an active approved college for this email domain.";
 
 export type ActiveCollege = {
   id: string;
@@ -52,7 +52,7 @@ function getCollegeLookupAdminClient() {
   const { supabaseServiceRoleKey } = getServerEnv();
 
   if (!supabaseServiceRoleKey) {
-    throw new Error("CampusLoop is missing SUPABASE_SERVICE_ROLE_KEY for college lookup.");
+    throw new Error("UniDrop is missing SUPABASE_SERVICE_ROLE_KEY for college lookup.");
   }
 
   const { supabaseUrl } = getPublicEnv();
@@ -109,7 +109,7 @@ export async function findActiveCollegeForEmail(
   void supabase;
 
   const emailDomain = getEmailDomain(email);
-  console.log("[CampusLoop][auth] extracted college domain", {
+  console.log("[UniDrop][auth] extracted college domain", {
     email,
     emailDomain,
     collegeName: collegeName ?? null,
@@ -128,7 +128,7 @@ export async function findActiveCollegeForEmail(
     .eq("is_active", true)
     .maybeSingle();
 
-  console.log("[CampusLoop][auth] admin colleges array lookup result", {
+  console.log("[UniDrop][auth] admin colleges array lookup result", {
     emailDomain,
     matchedCollege,
     matchedCollegeError: matchedCollegeError?.message ?? null,
@@ -139,7 +139,7 @@ export async function findActiveCollegeForEmail(
   }
 
   if (matchedCollegeError) {
-    console.error("[CampusLoop][auth] admin colleges array lookup error", {
+    console.error("[UniDrop][auth] admin colleges array lookup error", {
       emailDomain,
       error: matchedCollegeError.message,
     });
@@ -152,7 +152,7 @@ export async function findActiveCollegeForEmail(
     .eq("is_active", true)
     .maybeSingle();
 
-  console.log("[CampusLoop][auth] admin colleges fallback lookup result", {
+  console.log("[UniDrop][auth] admin colleges fallback lookup result", {
     emailDomain,
     fallbackCollege,
     fallbackError: fallbackError?.message ?? null,

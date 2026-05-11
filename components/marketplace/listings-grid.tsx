@@ -89,7 +89,7 @@ export function ListingsGrid({
           ) : null}
 
           {/* Grid */}
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
             {listings.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}
@@ -101,7 +101,7 @@ export function ListingsGrid({
                   key={`skeleton-${i}`}
                   className="overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl"
                 >
-                  <Skeleton className="h-64 w-full rounded-none" />
+                  <Skeleton className="h-56 w-full rounded-none sm:h-64" />
                   <div className="space-y-4 p-5">
                     <Skeleton className="h-4 w-3/4" />
                     <Skeleton className="h-3 w-1/2" />

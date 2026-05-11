@@ -38,7 +38,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         <Badge variant="soft" className="rounded-full px-4 py-2">Create account</Badge>
         <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">Start trading with your campus identity.</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Join CampusLoop with your student details and start trading locally.
+          Join UniDrop with your student details and start trading locally.
         </p>
 
         <SignupForm serverError={params.error} />

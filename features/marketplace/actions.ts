@@ -10,6 +10,7 @@ import {
   isListingCondition,
 } from "@/features/marketplace/constants";
 import { ensureUserProfile, type SupabaseClientLike } from "@/features/auth/profile";
+import { createActivityEntry } from "@/features/activity/actions";
 import { createClient } from "@/lib/supabase/server";
 
 type ValidListingInput = {
@@ -160,18 +161,18 @@ async function requireUser() {
   const { data, error } = await supabase.auth.getUser();
   const user = data.user;
 
-  console.log("[CampusLoop][marketplace] auth.getUser()", {
+  console.log("[UniDrop][marketplace] auth.getUser()", {
     userId: user?.id ?? null,
     email: user?.email ?? null,
     error: error?.message ?? null,
   });
 
   if (error) {
-    throw new Error(`CampusLoop could not read the authenticated session: ${error.message}`);
+    throw new Error(`UniDrop could not read the authenticated session: ${error.message}`);
   }
 
   if (!user) {
-    throw new Error("CampusLoop could not read the authenticated session: no user was returned.");
+    throw new Error("UniDrop could not read the authenticated session: no user was returned.");
   }
 
   return { supabase, user };
@@ -185,7 +186,7 @@ async function requireListingContext() {
     .eq("id", user.id)
     .maybeSingle();
 
-  console.log("[CampusLoop][marketplace] profiles lookup", {
+  console.log("[UniDrop][marketplace] profiles lookup", {
     userId: user.id,
     profileId: profile?.id ?? null,
     profile,
@@ -194,7 +195,7 @@ async function requireListingContext() {
   });
 
   if (error) {
-    throw new Error(`CampusLoop could not verify your campus profile: ${error.message}`);
+    throw new Error(`UniDrop could not verify your campus profile: ${error.message}`);
   }
 
   if (profile?.college_id) {
@@ -203,14 +204,14 @@ async function requireListingContext() {
 
   try {
     const result = await ensureUserProfile(supabase as unknown as SupabaseClientLike, user);
-    console.log("[CampusLoop][marketplace] ensureUserProfile()", {
+    console.log("[UniDrop][marketplace] ensureUserProfile()", {
       userId: user.id,
       collegeId: result.collegeId,
       username: result.username,
     });
     return { supabase, user, profileId: user.id, collegeId: result.collegeId };
   } catch (ensureError) {
-    console.error("[CampusLoop][marketplace] ensureUserProfile() failed", {
+    console.error("[UniDrop][marketplace] ensureUserProfile() failed", {
       userId: user.id,
       error:
         ensureError instanceof Error
@@ -220,7 +221,7 @@ async function requireListingContext() {
 
     throw ensureError instanceof Error
       ? ensureError
-      : new Error("CampusLoop could not verify your campus profile.");
+      : new Error("UniDrop could not verify your campus profile.");
   }
 }
 
@@ -342,7 +343,7 @@ export async function createListing(formData: FormData) {
     views_count: 0,
   };
 
-  console.log("[CampusLoop][marketplace] createListing insert payload", {
+  console.log("[UniDrop][marketplace] createListing insert payload", {
     authUserId: user.id,
     profileId,
     collegeId,
@@ -356,7 +357,7 @@ export async function createListing(formData: FormData) {
     .single();
 
   if (error || !listing) {
-    console.error("[CampusLoop][marketplace] createListing insert error", {
+    console.error("[UniDrop][marketplace] createListing insert error", {
       authUserId: user.id,
       profileId,
       collegeId,
@@ -364,7 +365,7 @@ export async function createListing(formData: FormData) {
       listingInsertPayload,
     });
     await cleanupUploadedImages(supabase, uploadedImages);
-    redirect(`/sell?error=${encodeMessage(error?.message ?? "CampusLoop could not publish your listing.")}`);
+    redirect(`/sell?error=${encodeMessage(error?.message ?? "UniDrop could not publish your listing.")}`);
   }
 
   const { error: imageError } = await supabase.from("listing_images").insert(
@@ -380,6 +381,9 @@ export async function createListing(formData: FormData) {
     await cleanupUploadedImages(supabase, uploadedImages);
     redirect(`/sell?error=${encodeMessage(imageError.message)}`);
   }
+
+  // Create activity entry for new listing
+  await createActivityEntry(supabase, user.id, listing.id, "listing_created");
 
   revalidatePath("/marketplace");
   revalidatePath("/account");
@@ -521,6 +525,9 @@ export async function markListingSold(listingId: string) {
     })
     .eq("id", listingId)
     .eq("seller_id", user.id);
+
+  // Create activity entry for sold listing
+  await createActivityEntry(supabase, user.id, listingId, "listing_sold");
 
   revalidatePath("/marketplace");
   revalidatePath(`/marketplace/${listingId}`);

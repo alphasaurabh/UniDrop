@@ -41,7 +41,9 @@ const listingSelect = `
     id,
     username,
     full_name,
-    avatar_url
+    avatar_url,
+    course,
+    year
   ),
   category:categories!listings_category_id_fkey(
     id,
@@ -90,6 +92,41 @@ export async function getListings(
   const limit = PAGINATION_LIMIT;
   const offset = (page - 1) * limit;
 
+  const isUuid = (value: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+
+  let categoryIdFilter: string | null = null;
+
+  if (filters.category && filters.category !== "all") {
+    if (isUuid(filters.category)) {
+      categoryIdFilter = filters.category;
+    } else {
+      const { data: categoryRow, error: categoryError } = await supabase
+        .from("categories")
+        .select("id")
+        .eq("name", filters.category)
+        .maybeSingle();
+
+      if (categoryError) {
+        throw new Error(categoryError.message);
+      }
+
+      if (!categoryRow?.id) {
+        return {
+          listings: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            hasMore: false,
+          },
+        };
+      }
+
+      categoryIdFilter = categoryRow.id;
+    }
+  }
+
   let countQuery = supabase.from("listings").select("id", { count: "exact" }).eq("status", "active");
   let dataQuery = supabase
     .from("listings")
@@ -104,9 +141,9 @@ export async function getListings(
     dataQuery = dataQuery.or(orFilter);
   }
 
-  if (filters.category && filters.category !== "all") {
-    countQuery = countQuery.eq("category_id", filters.category);
-    dataQuery = dataQuery.eq("category_id", filters.category);
+  if (categoryIdFilter) {
+    countQuery = countQuery.eq("category_id", categoryIdFilter);
+    dataQuery = dataQuery.eq("category_id", categoryIdFilter);
   }
 
   if (filters.condition && filters.condition !== "all") {
@@ -216,6 +253,26 @@ export async function getSavedListings(supabase: SupabaseLike): Promise<Listing[
     .map((row) => row.listing)
     .filter((listing): listing is RawListing => Boolean(listing))
     .map((listing) => ({ ...withPublicImageUrls(supabase, listing), isSaved: true }));
+}
+
+export async function getListingsBySellerUsername(
+  supabase: SupabaseLike,
+  sellerId: string,
+): Promise<Listing[]> {
+  const { data, error } = await supabase
+    .from("listings")
+    .select(listingSelect)
+    .eq("seller_id", sellerId)
+    .eq("status", "active")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return ((data ?? []) as unknown as RawListing[]).map((listing) =>
+    withPublicImageUrls(supabase, listing),
+  );
 }
 
 export async function getSavedListingIds(supabase: SupabaseLike) {

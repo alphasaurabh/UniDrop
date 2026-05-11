@@ -187,7 +187,7 @@ export async function createUserProfileWithAdmin(
   );
 
   if (error) {
-    throw new Error(`CampusLoop could not create your profile: ${error.message}`);
+    throw new Error(`UniDrop could not create your profile: ${error.message}`);
   }
 
   return {
@@ -210,7 +210,7 @@ export async function ensureUserProfile(supabase: SupabaseClientLike, user: User
     .maybeSingle();
 
   if (fetchError) {
-    throw new Error(`CampusLoop could not verify your campus profile: ${fetchError.message}`);
+    throw new Error(`UniDrop could not verify your campus profile: ${fetchError.message}`);
   }
 
   if (isCompleteProfile(existingProfile)) {
@@ -230,7 +230,7 @@ export async function ensureUserProfile(supabase: SupabaseClientLike, user: User
   });
 
   if (error) {
-    throw new Error(`CampusLoop could not create your profile: ${error.message}`);
+    throw new Error(`UniDrop could not create your profile: ${error.message}`);
   }
 
   return {

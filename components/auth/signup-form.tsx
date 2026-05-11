@@ -133,7 +133,7 @@ export function SignupForm({ serverError }: SignupFormProps) {
         ) : (
           <p className="flex gap-2 rounded-2xl border bg-muted/45 p-3 text-xs leading-5 text-muted-foreground">
             <MailCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-            Use your {allowedDomainsText} email. CampusLoop is currently open only to Gautam Buddha University students.
+            Use your {allowedDomainsText} email. UniDrop is currently open only to Gautam Buddha University students.
           </p>
         )}
         <input name="emailDomain" type="hidden" value={getEmailDomain(trimmedEmail)} />

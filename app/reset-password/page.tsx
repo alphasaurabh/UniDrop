@@ -27,7 +27,7 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
         </div>
         <h1 className="mt-6 text-3xl font-semibold tracking-tight">Choose a new password</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Create a secure password to continue into the verified CampusLoop marketplace.
+          Create a secure password to continue into the verified UniDrop marketplace.
         </p>
 
         {params.error ? (

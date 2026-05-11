@@ -68,7 +68,7 @@ export async function updateSession(request: NextRequest) {
     redirectUrl.pathname = "/login";
     redirectUrl.searchParams.set(
       "error",
-      "Only verified Gautam Buddha University students can access CampusLoop.",
+      "Only verified Gautam Buddha University students can access UniDrop.",
     );
     return NextResponse.redirect(redirectUrl);
   }

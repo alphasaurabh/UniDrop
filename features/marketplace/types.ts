@@ -17,6 +17,8 @@ export type ListingSeller = {
   username: string;
   full_name: string | null;
   avatar_url: string | null;
+  course?: string | null;
+  year?: string | null;
 };
 
 export type Listing = {
