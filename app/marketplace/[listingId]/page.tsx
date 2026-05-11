@@ -14,6 +14,7 @@ import {
   getRelatedListings,
   getSavedListingIds,
 } from "@/features/marketplace/queries";
+import { formatListingConditionLabel } from "@/features/marketplace/constants";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -98,9 +99,9 @@ export default async function ListingDetailPage({
         <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
           <Card className="p-6">
             <div className="mb-4 flex flex-wrap gap-2">
-              <Badge>{listing.condition}</Badge>
+              <Badge>{formatListingConditionLabel(listing.condition)}</Badge>
               <Badge variant="soft">{listing.category?.name ?? listing.category_id}</Badge>
-              {listing.negotiable ? <Badge variant="soft">Negotiable</Badge> : null}
+              {listing.is_negotiable ? <Badge variant="soft">Negotiable</Badge> : null}
             </div>
             <h1 className="text-3xl font-semibold tracking-tight">{listing.title}</h1>
             <p className="mt-4 text-4xl font-semibold">{formatPrice(listing.price)}</p>
@@ -108,16 +109,21 @@ export default async function ListingDetailPage({
             <div className="mt-6 space-y-3 text-sm text-muted-foreground">
               <p className="flex items-center gap-2">
                 <MapPin className="size-4 text-primary" />
-                Campus pickup
+                {listing.location_text}
               </p>
               <p className="flex items-center gap-2">
                 <CalendarDays className="size-4 text-primary" />
                 Posted {formatPostedTime(listing.created_at)}
               </p>
-                <p className="flex items-center gap-2">
-                  <MessageCircle className="size-4 text-primary" />
-                  Contact via CampusLoop
-                </p>
+              <a
+                className="flex items-center gap-2 text-primary hover:underline"
+                href={`https://wa.me/${listing.contact_whatsapp.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <MessageCircle className="size-4" />
+                WhatsApp {listing.contact_whatsapp}
+              </a>
             </div>
 
             <form action={toggleSaveListing.bind(null, listing.id, isSaved)} className="mt-6">

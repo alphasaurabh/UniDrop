@@ -1,3 +1,7 @@
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+
+import { getPublicEnv, getServerEnv } from "@/lib/env";
+
 export type ApprovedCollege = {
   name: string;
   allowedEmailDomains: string[];
@@ -38,12 +42,40 @@ export const approvedColleges: ApprovedCollege[] = [
   },
 ];
 
+let collegeLookupAdminClient: CollegeLookupClient | null = null;
+
+function getCollegeLookupAdminClient() {
+  if (collegeLookupAdminClient) {
+    return collegeLookupAdminClient;
+  }
+
+  const { supabaseServiceRoleKey } = getServerEnv();
+
+  if (!supabaseServiceRoleKey) {
+    throw new Error("CampusLoop is missing SUPABASE_SERVICE_ROLE_KEY for college lookup.");
+  }
+
+  const { supabaseUrl } = getPublicEnv();
+
+  collegeLookupAdminClient = createSupabaseClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }) as unknown as CollegeLookupClient;
+
+  return collegeLookupAdminClient;
+}
+
 export function getApprovedCollegeByName(name: string) {
   return approvedColleges.find((college) => college.name === name) ?? null;
 }
 
 export function getEmailDomain(email: string) {
-  return email.trim().toLowerCase().split("@").at(1) ?? "";
+  const normalizedEmail = email.trim().toLowerCase();
+  const emailDomain = normalizedEmail.split("@")[1]?.trim().replace(/\.+$/, "");
+
+  return emailDomain ?? "";
 }
 
 export function isEmailDomainAllowedByCollege(email: string, collegeName: string) {
@@ -74,29 +106,73 @@ export async function findActiveCollegeForEmail(
   email: string,
   collegeName?: string,
 ) {
+  void supabase;
+
   const emailDomain = getEmailDomain(email);
+  console.log("[CampusLoop][auth] extracted college domain", {
+    email,
+    emailDomain,
+    collegeName: collegeName ?? null,
+  });
 
   if (!emailDomain) {
     return null;
   }
 
-  let query = supabase
+  const adminSupabase = getCollegeLookupAdminClient();
+
+  const { data: matchedCollege, error: matchedCollegeError } = await adminSupabase
     .from("colleges")
     .select("id,name,slug,allowed_email_domains,is_active")
+    .contains("allowed_email_domains", [emailDomain])
     .eq("is_active", true)
-    .contains("allowed_email_domains", [emailDomain]);
+    .maybeSingle();
 
-  if (collegeName) {
-    query = query.eq("name", collegeName);
+  console.log("[CampusLoop][auth] admin colleges array lookup result", {
+    emailDomain,
+    matchedCollege,
+    matchedCollegeError: matchedCollegeError?.message ?? null,
+  });
+
+  if (!matchedCollegeError && matchedCollege) {
+    return matchedCollege;
   }
 
-  const { data, error } = await query.maybeSingle();
+  if (matchedCollegeError) {
+    console.error("[CampusLoop][auth] admin colleges array lookup error", {
+      emailDomain,
+      error: matchedCollegeError.message,
+    });
+  }
 
-  if (error || !data) {
+  const { data: fallbackCollege, error: fallbackError } = await adminSupabase
+    .from("colleges")
+    .select("id,name,slug,allowed_email_domains,is_active")
+    .eq("name", collegeName ?? approvedColleges[0].name)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  console.log("[CampusLoop][auth] admin colleges fallback lookup result", {
+    emailDomain,
+    fallbackCollege,
+    fallbackError: fallbackError?.message ?? null,
+  });
+
+  if (fallbackError || !fallbackCollege) {
     return null;
   }
 
-  return data;
+  const fallbackDomainMatch =
+    Array.isArray(fallbackCollege.allowed_email_domains) &&
+    fallbackCollege.allowed_email_domains.some(
+      (allowedDomain) => typeof allowedDomain === "string" && allowedDomain.trim().toLowerCase() === emailDomain,
+    );
+
+  if (fallbackDomainMatch) {
+    return fallbackCollege;
+  }
+
+  return null;
 }
 
 export async function isEmailApprovedForCollege(

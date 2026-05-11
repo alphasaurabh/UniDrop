@@ -13,7 +13,10 @@ import {
   isLocallyApprovedCollegeEmail,
   type CollegeLookupClient,
 } from "@/features/auth/colleges";
-import { ensureUserProfile, type SupabaseClientLike } from "@/features/auth/profile";
+import {
+  ensureUserProfile,
+  type SupabaseClientLike,
+} from "@/features/auth/profile";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -47,42 +50,6 @@ export type AuthActionState = {
 const initialAuthState: AuthActionState = {
   status: "idle",
 };
-
-async function confirmExistingUserByEmail(
-  adminSupabase: NonNullable<ReturnType<typeof createAdminClient>>,
-  email: string,
-  password: string,
-  userMetadata: Record<string, string>,
-) {
-  const { data, error } = await adminSupabase.auth.admin.listUsers({
-    page: 1,
-    perPage: 1000,
-  });
-
-  if (error) {
-    return error;
-  }
-
-  const existingUser = data.users.find((user) => user.email?.toLowerCase() === email);
-
-  if (!existingUser) {
-    return new Error("CampusLoop could not find the existing pending account.");
-  }
-
-  const { error: updateError } = await adminSupabase.auth.admin.updateUserById(
-    existingUser.id,
-    {
-      password,
-      email_confirm: true,
-      user_metadata: {
-        ...existingUser.user_metadata,
-        ...userMetadata,
-      },
-    },
-  );
-
-  return updateError;
-}
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -142,6 +109,7 @@ export async function signupWithState(
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const selectedCollege = getApprovedCollegeByName(collegeName);
+  const adminSupabase = createAdminClient();
 
   if (!fullName || !username || !email || !password || !collegeName) {
     return {
@@ -165,74 +133,24 @@ export async function signupWithState(
   }
 
   const activeCollege = await findActiveCollegeForEmail(
-    supabase as unknown as CollegeLookupClient,
+    (adminSupabase ?? supabase) as unknown as CollegeLookupClient,
     email,
     collegeName,
   );
+
+  if (!activeCollege?.id) {
+    return {
+      status: "error",
+      message: "CampusLoop could not find an active approved college for this email domain.",
+    };
+  }
+
   const userMetadata = {
     username,
     full_name: fullName,
-    college: activeCollege?.name ?? selectedCollege.name,
+    college: activeCollege.name,
     role: "user",
   };
-  const adminSupabase = createAdminClient();
-
-  if (adminSupabase) {
-    const { error: createError } = await adminSupabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: userMetadata,
-    });
-
-    if (createError) {
-      const isExistingUserError = /already|registered|exists/i.test(createError.message);
-      const confirmError = isExistingUserError
-        ? await confirmExistingUserByEmail(adminSupabase, email, password, userMetadata)
-        : createError;
-
-      if (confirmError) {
-        return {
-          status: "error",
-          message: confirmError.message,
-        };
-      }
-    }
-
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (signInError || !signInData.user) {
-      return {
-        status: "error",
-        message: signInError?.message ?? "CampusLoop created your account, but could not start your session.",
-      };
-    }
-
-    try {
-      await ensureUserProfile(supabase as unknown as SupabaseClientLike, signInData.user);
-    } catch (profileError) {
-      if (
-        profileError instanceof Error &&
-        profileError.message === ACTIVE_COLLEGE_LOOKUP_ERROR_MESSAGE &&
-        isLocallyApprovedCollegeEmail(signInData.user.email)
-      ) {
-        redirect("/marketplace");
-      }
-
-      return {
-        status: "error",
-        message:
-          profileError instanceof Error
-            ? profileError.message
-            : "CampusLoop could not create your profile.",
-      };
-    }
-
-    redirect("/marketplace");
-  }
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -276,6 +194,8 @@ export async function signupWithState(
   }
 
   if (data.user) {
+    // User created but email confirmation required
+    // Profile will be created in auth/callback route after email confirmation
     return {
       status: "success",
       message:
@@ -331,12 +251,13 @@ export async function logout() {
 
 export async function requestPasswordReset(formData: FormData) {
   const supabase = await createClient();
+  const adminSupabase = createAdminClient();
   const headersList = await headers();
   const origin = getOrigin(headersList);
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
 
   const activeCollege = await findActiveCollegeForEmail(
-    supabase as unknown as CollegeLookupClient,
+    (adminSupabase ?? supabase) as unknown as CollegeLookupClient,
     email,
   );
 

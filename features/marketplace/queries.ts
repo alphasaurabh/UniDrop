@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { LISTING_IMAGE_BUCKET } from "@/features/marketplace/constants";
-import type { Listing, ListingFilters, ListingImage, ListingSeller } from "@/features/marketplace/types";
+import type { Listing, ListingFilters, ListingImage, ListingSeller, PaginationMeta } from "@/features/marketplace/types";
+import { PAGINATION_LIMIT } from "@/features/marketplace/constants";
 
 type SupabaseLike = SupabaseClient;
 
@@ -23,12 +23,18 @@ type SavedIdRow = {
 const listingSelect = `
   id,
   seller_id,
+  college_id,
+  category_id,
+  slug,
   title,
   description,
-  category_id,
   condition,
   price,
+  is_negotiable,
   status,
+  location_text,
+  contact_whatsapp,
+  views_count,
   created_at,
   updated_at,
   seller:profiles!listings_seller_id_fkey(
@@ -44,6 +50,7 @@ const listingSelect = `
   images:listing_images(
     id,
     listing_id,
+    image_url,
     display_order
   )
 `;
@@ -66,14 +73,10 @@ function withPublicImageUrls(supabase: SupabaseLike, listing: RawListing): Listi
     images: images
       .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
       .map((image) => {
-        const publicUrl = image.storage_path
-          ? supabase.storage.from(LISTING_IMAGE_BUCKET).getPublicUrl(image.storage_path).data.publicUrl
-          : "";
-
         return {
           ...image,
           display_order: image.display_order ?? 0,
-          publicUrl,
+          publicUrl: image.image_url,
         };
       }),
   };
@@ -82,42 +85,71 @@ function withPublicImageUrls(supabase: SupabaseLike, listing: RawListing): Listi
 export async function getListings(
   supabase: SupabaseLike,
   filters: ListingFilters = {},
-): Promise<Listing[]> {
-  let query = supabase
+): Promise<{ listings: Listing[]; pagination: PaginationMeta }> {
+  const page = Math.max(1, filters.page ?? 1);
+  const limit = PAGINATION_LIMIT;
+  const offset = (page - 1) * limit;
+
+  let countQuery = supabase.from("listings").select("id", { count: "exact" }).eq("status", "active");
+  let dataQuery = supabase
     .from("listings")
     .select(listingSelect)
     .eq("status", "active");
 
+  // Apply filters to both queries
   if (filters.q) {
     const search = filters.q.replace(/[%_,]/g, "");
-    query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    const orFilter = `title.ilike.%${search}%,description.ilike.%${search}%,location_text.ilike.%${search}%`;
+    countQuery = countQuery.or(orFilter);
+    dataQuery = dataQuery.or(orFilter);
   }
 
   if (filters.category && filters.category !== "all") {
-    query = query.eq("category_id", filters.category);
+    countQuery = countQuery.eq("category_id", filters.category);
+    dataQuery = dataQuery.eq("category_id", filters.category);
   }
 
   if (filters.condition && filters.condition !== "all") {
-    query = query.eq("condition", filters.condition);
+    countQuery = countQuery.eq("condition", filters.condition);
+    dataQuery = dataQuery.eq("condition", filters.condition);
   }
 
+  // Apply sorting
   if (filters.sort === "price-low") {
-    query = query.order("price", { ascending: true });
+    dataQuery = dataQuery.order("price", { ascending: true });
   } else if (filters.sort === "price-high") {
-    query = query.order("price", { ascending: false });
+    dataQuery = dataQuery.order("price", { ascending: false });
   } else {
-    query = query.order("created_at", { ascending: false });
+    dataQuery = dataQuery.order("created_at", { ascending: false });
   }
 
-  const { data, error } = await query;
+  // Add pagination
+  dataQuery = dataQuery.range(offset, offset + limit - 1);
 
-  if (error) {
-    throw new Error(error.message);
+  const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
+
+  if (countResult.error) {
+    throw new Error(countResult.error.message);
   }
 
-  return ((data ?? []) as unknown as RawListing[]).map((listing) =>
+  if (dataResult.error) {
+    throw new Error(dataResult.error.message);
+  }
+
+  const total = countResult.count ?? 0;
+  const listings = ((dataResult.data ?? []) as unknown as RawListing[]).map((listing) =>
     withPublicImageUrls(supabase, listing),
   );
+
+  return {
+    listings,
+    pagination: {
+      page,
+      limit,
+      total,
+      hasMore: offset + limit < total,
+    },
+  };
 }
 
 export async function getListingById(

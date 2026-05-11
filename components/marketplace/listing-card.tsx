@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatListingConditionLabel } from "@/features/marketplace/constants";
 import { toggleSaveListing } from "@/features/marketplace/actions";
 import { formatPostedTime, formatPrice } from "@/features/marketplace/format";
 import type { Listing } from "@/features/marketplace/types";
@@ -51,7 +52,7 @@ export function ListingCard({
             </div>
           )}
           <div className="absolute bottom-4 left-4 flex gap-2">
-            <Badge>{listing.condition}</Badge>
+            <Badge>{formatListingConditionLabel(listing.condition)}</Badge>
             <Badge variant="soft">{formatPostedTime(listing.created_at)}</Badge>
           </div>
           {listing.status === "sold" ? (
@@ -79,7 +80,7 @@ export function ListingCard({
         <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
           <span className="inline-flex min-w-0 items-center gap-1.5">
             <MapPin className="size-4 shrink-0" />
-            <span className="truncate">Campus pickup</span>
+            <span className="truncate">{listing.location_text}</span>
           </span>
           <span className="shrink-0">{listing.category?.name ?? listing.category_id}</span>
         </div>

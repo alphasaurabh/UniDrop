@@ -1,3 +1,48 @@
+-- Set up profiles table with college_id
+-- The profiles table is auto-created by Supabase auth, but we need to add college_id column
+alter table if exists public.profiles 
+add column if not exists college_id uuid references public.colleges(id);
+
+alter table if exists public.profiles 
+add column if not exists username text unique;
+
+alter table if exists public.profiles 
+add column if not exists full_name text;
+
+alter table if exists public.profiles 
+add column if not exists role text default 'user';
+
+-- Enable RLS on profiles table and add policies
+alter table if exists public.profiles enable row level security;
+
+-- Drop existing policies if they exist
+drop policy if exists "Users can read their own profile" on public.profiles;
+drop policy if exists "Users can read other profiles" on public.profiles;
+drop policy if exists "Users can create their own profile" on public.profiles;
+drop policy if exists "Users can update their own profile" on public.profiles;
+
+-- Create policies
+create policy "Users can read their own profile"
+on public.profiles for select
+to authenticated
+using (auth.uid() = id);
+
+create policy "Users can read other profiles"
+on public.profiles for select
+to authenticated
+using (true);
+
+create policy "Users can create their own profile"
+on public.profiles for insert
+to authenticated
+with check (auth.uid() = id);
+
+create policy "Users can update their own profile"
+on public.profiles for update
+to authenticated
+using (auth.uid() = id)
+with check (auth.uid() = id);
+
 create table if not exists public.listings (
   id uuid primary key default gen_random_uuid(),
   seller_id uuid not null references public.profiles(id) on delete cascade,

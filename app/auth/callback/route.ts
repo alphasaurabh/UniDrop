@@ -5,7 +5,15 @@ import {
   isLocallyApprovedCollegeEmail,
 } from "@/features/auth/colleges";
 import { ensureUserProfile, type SupabaseClientLike } from "@/features/auth/profile";
-import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
+import { getPublicEnv, hasPublicEnv } from "@/lib/env";
+
+type CookieToSet = {
+  name: string;
+  value: string;
+  options: CookieOptions;
+};
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -20,12 +28,42 @@ export async function GET(request: NextRequest) {
   }
 
   if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    // For cookie persistence during redirect, we need to handle cookies explicitly in Route Handler
+    // Create a response object first to attach cookies to
+    const response = NextResponse.redirect(new URL(next, request.url));
 
-    if (error) {
+    if (!hasPublicEnv()) {
+      return response;
+    }
+
+    // Create Supabase client with explicit cookie handling for Route Handler
+    const { supabaseUrl, supabaseAnonKey } = getPublicEnv();
+    const cookieStore = await cookies();
+
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: CookieToSet[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+            // Explicitly set cookies on the response object
+            response.cookies.set(name, value, options);
+          });
+        },
+      },
+    });
+
+    // Exchange authorization code for session
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (exchangeError) {
       return NextResponse.redirect(
-        new URL(`/login?error=${encodeURIComponent(error.message)}`, request.url),
+        new URL(
+          `/login?error=${encodeURIComponent(exchangeError.message)}`,
+          request.url,
+        ),
       );
     }
 
@@ -35,7 +73,10 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.redirect(
-        new URL("/login?error=CampusLoop could not verify your session.", request.url),
+        new URL(
+          "/login?error=CampusLoop could not verify your session.",
+          request.url,
+        ),
       );
     }
 
@@ -47,7 +88,8 @@ export async function GET(request: NextRequest) {
         profileError.message === ACTIVE_COLLEGE_LOOKUP_ERROR_MESSAGE &&
         isLocallyApprovedCollegeEmail(user.email)
       ) {
-        return NextResponse.redirect(new URL(next, request.url));
+        // Return response with cookies intact
+        return response;
       }
 
       await supabase.auth.signOut();
@@ -63,6 +105,9 @@ export async function GET(request: NextRequest) {
         ),
       );
     }
+
+    // Return response with cookies set
+    return response;
   }
 
   return NextResponse.redirect(new URL(next, request.url));

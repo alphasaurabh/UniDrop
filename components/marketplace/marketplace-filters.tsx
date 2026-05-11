@@ -6,7 +6,7 @@ import { useTransition } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { LISTING_CONDITIONS } from "@/features/marketplace/constants";
+import { LISTING_CONDITIONS, formatListingConditionLabel } from "@/features/marketplace/constants";
 
 type Category = { id: string; name: string };
 
@@ -66,7 +66,9 @@ export function MarketplaceFilters({ categories }: MarketplaceFiltersProps) {
         >
           <option value="all">Any condition</option>
           {LISTING_CONDITIONS.map((condition) => (
-            <option key={condition}>{condition}</option>
+            <option key={condition} value={condition}>
+              {formatListingConditionLabel(condition)}
+            </option>
           ))}
         </Select>
         <Select
