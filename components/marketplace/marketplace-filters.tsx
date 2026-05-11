@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, FormEvent } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -16,6 +16,8 @@ function updateParams(params: URLSearchParams, key: string, value: string) {
   } else {
     params.set(key, value);
   }
+  // Always reset to page 1 when filters change
+  params.delete("page");
 }
 
 type MarketplaceFiltersProps = {
@@ -33,10 +35,26 @@ export function MarketplaceFilters({ categories }: MarketplaceFiltersProps) {
     startTransition(() => router.push(`/marketplace?${params.toString()}`));
   }
 
+  function handleSearch(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const query = String(formData.get("q") ?? "").trim();
+    
+    const params = new URLSearchParams(searchParams.toString());
+    if (query) {
+      params.set("q", query);
+    } else {
+      params.delete("q");
+    }
+    params.delete("page");
+    
+    startTransition(() => router.push(`/marketplace?${params.toString()}`));
+  }
+
   return (
-    <div className="sticky top-24 z-30 mb-8 rounded-3xl border bg-background/82 p-3 shadow-glow backdrop-blur-2xl">
-      <div className="grid gap-3 lg:grid-cols-[1fr_220px_180px_180px]">
-        <form action="/marketplace" className="relative">
+    <div className="sticky top-24 z-30 mb-8 surface-panel p-3 sm:p-4">
+      <div className="grid gap-3 lg:grid-cols-[1.15fr_220px_180px_180px]">
+        <form onSubmit={handleSearch} className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             name="q"

@@ -45,12 +45,13 @@ const config: Config = {
         glow: "0 0 0 1px rgb(255 255 255 / 0.9), 0 28px 70px -38px rgb(15 23 42 / 0.42)",
       },
       borderRadius: {
-        xl: "1rem",
-        "2xl": "1.25rem",
-        "3xl": "1.5rem",
+        xl: "0.875rem",
+        "2xl": "1.125rem",
+        "3xl": "1.375rem",
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-manrope)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-sora)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },

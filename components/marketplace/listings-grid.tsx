@@ -66,7 +66,7 @@ export function ListingsGrid({
   return (
     <div className="space-y-8">
       {error ? (
-        <div className="rounded-2xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        <div className="surface-panel border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}
@@ -99,7 +99,7 @@ export function ListingsGrid({
               Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={`skeleton-${i}`}
-                  className="overflow-hidden rounded-3xl border bg-card shadow-soft"
+                  className="overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl"
                 >
                   <Skeleton className="h-64 w-full rounded-none" />
                   <div className="space-y-4 p-5">
@@ -133,7 +133,7 @@ export function ListingsGrid({
           {!pagination.hasMore && listings.length > 0 && (
             <div className="flex justify-center pt-8">
               <p className="text-sm text-muted-foreground">
-                You've reached the end. Showing all {pagination.total} listings.
+                You&apos;ve reached the end. Showing all {pagination.total} listings.
               </p>
             </div>
           )}

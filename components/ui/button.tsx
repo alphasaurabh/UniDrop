@@ -8,12 +8,12 @@ export type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-primary-foreground shadow-soft hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:ring-primary",
+    "glass-btn bg-primary text-primary-foreground shadow-soft hover:-translate-y-0.5 focus-visible:ring-primary",
   secondary:
-    "bg-foreground text-background shadow-soft hover:-translate-y-0.5 hover:bg-foreground/88 focus-visible:ring-foreground/40",
-  ghost: "bg-transparent text-foreground hover:bg-muted/80 focus-visible:ring-primary",
+    "glass-btn bg-card/85 text-foreground shadow-soft hover:-translate-y-0.5 focus-visible:ring-foreground/40",
+  ghost: "bg-transparent text-foreground hover:bg-muted/70 focus-visible:ring-primary",
   outline:
-    "border border-border bg-card/80 text-foreground shadow-sm backdrop-blur hover:-translate-y-0.5 hover:bg-card focus-visible:ring-primary",
+    "border border-border/70 bg-card/70 text-foreground shadow-soft backdrop-blur-xl hover:-translate-y-0.5 hover:bg-card focus-visible:ring-primary",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -51,7 +51,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex shrink-0 items-center justify-center rounded-full font-medium transition",
+    "inline-flex shrink-0 items-center justify-center rounded-xl font-medium transition will-change-transform",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:pointer-events-none disabled:opacity-50",
     variantClasses[variant],

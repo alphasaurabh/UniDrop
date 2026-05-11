@@ -3,21 +3,48 @@
 @tailwind utilities;
 
 :root {
-  --background: 42 46% 97%;
-  --foreground: 210 34% 13%;
-  --muted: 38 34% 92%;
-  --muted-foreground: 220 10% 42%;
-  --border: 36 28% 84%;
-  --input: 36 28% 84%;
-  --ring: 168 68% 28%;
+  /* Color tokens (H S% L%) - used by Tailwind color utilities via css variables */
+  --background: 40 36% 97%;
+  --foreground: 222 28% 14%;
+  --muted: 42 24% 94%;
+  --muted-foreground: 223 12% 42%;
+  --border: 220 16% 88%;
+  --input: 220 16% 88%;
+  --ring: 184 44% 42%;
   --card: 0 0% 100%;
-  --card-foreground: 210 34% 13%;
-  --primary: 166 72% 28%;
-  --primary-foreground: 44 55% 96%;
-  --accent: 35 95% 58%;
-  --accent-foreground: 210 34% 13%;
+  --card-foreground: 222 28% 14%;
+  --primary: 182 45% 40%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 195 42% 57%;
+  --accent-foreground: 222 28% 14%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
+
+  /* Layering & spacing tokens */
+  --radius-lg: 1rem;
+  --radius-md: 0.625rem;
+  --surface-page: 40 36% 97%;
+  --surface-1: 0 0% 100%;
+  --surface-2: 40 24% 96%;
+  --surface-3: 220 18% 92%;
+  --glass-bg: 255 255 255 / 0.72; /* fallback */
+  --glass-border: 220 16% 86%;
+  --glass-strength: 0.6;
+  --glass-blur: 14px;
+
+  /* Elevation shadows */
+  --shadow-soft: 0 16px 40px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+  --shadow-elevated: 0 24px 60px rgba(15,23,42,0.12), 0 4px 10px rgba(15,23,42,0.05);
+  --shadow-glow: 0 0 0 1px rgba(255,255,255,0.5), 0 22px 54px rgba(15,23,42,0.08);
+
+  /* Motion tokens */
+  --motion-fast: 120ms;
+  --motion-medium: 220ms;
+  --motion-spring: cubic-bezier(.2,.9,.2,1);
+
+  /* Typography */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
 * {
@@ -32,16 +59,23 @@ html {
 body {
   min-height: 100%;
   background:
-    radial-gradient(circle at 15% 0%, rgb(16 185 129 / 0.12), transparent 30rem),
-    radial-gradient(circle at 85% 12%, rgb(245 158 11 / 0.10), transparent 26rem),
-    linear-gradient(180deg, hsl(var(--background)) 0%, #fffdf8 46%, hsl(var(--background)) 100%);
+    radial-gradient(circle at top left, hsl(var(--primary) / 0.08), transparent 34%),
+    radial-gradient(circle at top right, hsl(var(--accent) / 0.08), transparent 28%),
+    linear-gradient(180deg, hsl(var(--background)) 0%, color-mix(in srgb, hsl(var(--background)) 84%, hsl(var(--muted)) 16%) 100%);
+  background-attachment: fixed;
   color: hsl(var(--foreground));
   font-feature-settings: "rlig" 1, "calt" 1;
   text-rendering: optimizeLegibility;
 }
 
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 ::selection {
-  background: rgb(20 184 166 / 0.22);
+  background: hsl(var(--primary) / 0.2);
 }
 
 @layer base {
@@ -62,10 +96,149 @@ body {
     text-wrap: balance;
   }
 
-  .premium-grid {
-    background-image:
-      linear-gradient(rgb(20 83 45 / 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(20 83 45 / 0.045) 1px, transparent 1px);
-    background-size: 44px 44px;
+  /* Mobile-first responsive utilities */
+  .mobile-safe {
+    @apply px-4 py-6 sm:px-5 sm:py-8;
   }
+
+  .mobile-safe-lg {
+    @apply px-4 py-8 sm:px-6 sm:py-10;
+  }
+
+  .touch-target {
+    @apply min-h-12 min-w-12;
+  }
+
+  .tap-highlight {
+    @apply transition-transform active:scale-95;
+  }
+
+  .glass-hover {
+    @apply transition-all hover:shadow-elevated hover:border-primary/30;
+  }
+
+  .premium-grid {
+    background-image: radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.08) 1px, transparent 0);
+    background-size: 26px 26px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.8), transparent 92%);
+  }
+
+  /* Premium surfaces */
+  .shadow-soft { box-shadow: var(--shadow-soft) !important; }
+  .shadow-elevated { box-shadow: var(--shadow-elevated) !important; }
+  .shadow-glow { box-shadow: var(--shadow-glow) !important; }
+
+  .glass {
+    background-color: rgba(var(--glass-bg));
+    border: 1px solid hsl(var(--border) / 0.7);
+    backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+    border-radius: var(--radius-lg);
+  }
+
+  .glass-nav {
+    background-color: color-mix(in srgb, hsl(var(--surface-1)) 78%, transparent 22%);
+    border: 1px solid hsl(var(--border) / 0.7);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    transition: transform var(--motion-medium) var(--motion-spring), background-color var(--motion-medium);
+    border-radius: 1.2rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .glass-card {
+    background-color: rgba(var(--glass-bg));
+    border: 1px solid hsl(var(--border) / 0.7);
+    backdrop-filter: blur(calc(var(--glass-blur) * 0.9)) saturate(122%);
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.9)) saturate(122%);
+    transition: transform var(--motion-medium) var(--motion-spring), box-shadow var(--motion-medium), border-color var(--motion-medium);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .glass-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elevated);
+    border-color: hsl(var(--border) / 0.9);
+  }
+
+  .glass-btn {
+    background-color: color-mix(in srgb, hsl(var(--primary)) 86%, hsl(var(--surface-1)) 14%);
+    border: 1px solid hsl(var(--border) / 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 0.875rem;
+    transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease, background-color var(--motion-fast);
+  }
+
+  .glass-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-elevated); }
+
+  .surface-panel {
+    background: color-mix(in srgb, hsl(var(--surface-1)) 82%, transparent 18%);
+    border: 1px solid hsl(var(--border) / 0.75);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    border-radius: 1.1rem;
+  }
+
+  .surface-elevated {
+    background: color-mix(in srgb, hsl(var(--surface-1)) 92%, transparent 8%);
+    border: 1px solid hsl(var(--border) / 0.7);
+    box-shadow: var(--shadow-elevated);
+    border-radius: 1.25rem;
+  }
+}
+
+/* Dark theme override - supports [data-theme="dark"] or prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 223 26% 6%;
+    --foreground: 210 30% 97%;
+    --muted: 223 18% 9%;
+    --muted-foreground: 217 14% 66%;
+    --border: 220 18% 16%;
+    --input: 220 18% 16%;
+    --ring: 183 40% 58%;
+    --card: 223 22% 9%;
+    --card-foreground: 210 30% 97%;
+    --primary: 182 42% 48%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 195 34% 48%;
+    --accent-foreground: 0 0% 100%;
+    --surface-page: 223 26% 6%;
+    --surface-1: 223 22% 9%;
+    --surface-2: 223 20% 11%;
+    --surface-3: 223 18% 14%;
+    --glass-bg: 18 23 31 / 0.56;
+    --glass-border: 220 18% 16%;
+    --shadow-soft: 0 18px 48px rgba(2,6,23,0.34);
+    --shadow-elevated: 0 26px 70px rgba(2,6,23,0.5);
+    --shadow-glow: 0 0 0 1px rgba(255,255,255,0.04), 0 26px 70px rgba(2,6,23,0.28);
+  }
+}
+
+/* Manual dark theme via data-theme attribute */
+:root[data-theme="dark"] {
+  --background: 223 26% 6%;
+  --foreground: 210 30% 97%;
+  --muted: 223 18% 9%;
+  --muted-foreground: 217 14% 66%;
+  --border: 220 18% 16%;
+  --input: 220 18% 16%;
+  --ring: 183 40% 58%;
+  --card: 223 22% 9%;
+  --card-foreground: 210 30% 97%;
+  --primary: 182 42% 48%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 195 34% 48%;
+  --accent-foreground: 0 0% 100%;
+  --surface-page: 223 26% 6%;
+  --surface-1: 223 22% 9%;
+  --surface-2: 223 20% 11%;
+  --surface-3: 223 18% 14%;
+  --glass-bg: 18 23 31 / 0.56;
+  --glass-border: 220 18% 16%;
+  --shadow-soft: 0 18px 48px rgba(2,6,23,0.34);
+  --shadow-elevated: 0 26px 70px rgba(2,6,23,0.5);
+  --shadow-glow: 0 0 0 1px rgba(255,255,255,0.04), 0 26px 70px rgba(2,6,23,0.28);
 }

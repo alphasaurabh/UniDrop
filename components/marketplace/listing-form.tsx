@@ -239,10 +239,10 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
           </p>
         ) : null}
 
-        <section className="rounded-3xl border bg-card/88 p-5 shadow-soft sm:p-7">
+        <section className="surface-panel p-5 sm:p-7">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight">Product photos</h2>
+              <h2 className="font-display text-xl font-semibold tracking-tight">Product photos</h2>
               <p className="mt-1 text-sm text-muted-foreground">Upload up to 8 clear images.</p>
             </div>
             <span className="text-sm text-muted-foreground">{imageCount}/8</span>
@@ -250,7 +250,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
 
           <div
             className={cn(
-              "rounded-3xl border border-dashed bg-muted/35 p-3 transition",
+              "rounded-[1rem] border border-dashed border-border/70 bg-background/65 p-3 transition",
               dragActive && "border-primary bg-primary/5",
             )}
             onDragOver={(event) => {
@@ -264,7 +264,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
               addFiles(Array.from(event.dataTransfer.files ?? []));
             }}
           >
-            <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-3xl p-6 text-center transition hover:bg-muted/55">
+            <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-[1rem] p-6 text-center transition hover:bg-muted/40">
               <ImagePlus className="size-8 text-primary" />
               <span className="mt-3 text-sm font-medium">Choose product images</span>
               <span className="mt-1 text-xs text-muted-foreground">PNG, JPG, WebP up to 5 MB each</span>
@@ -284,7 +284,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                 <motion.div
                   key={image.id}
                   layout
-                  className="relative overflow-hidden rounded-2xl border bg-muted"
+                  className="relative overflow-hidden rounded-[1rem] border border-border/70 bg-muted/60"
                 >
                   <Image
                     src={image.publicUrl}
@@ -295,7 +295,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                   />
                   <button
                     type="button"
-                    className="absolute right-2 top-2 grid size-8 place-items-center rounded-full bg-white/90 text-destructive shadow-sm"
+                    className="absolute right-2 top-2 grid size-8 place-items-center rounded-full bg-background/90 text-destructive shadow-soft"
                     onClick={() => setRemovedImageIds((ids) => [...ids, image.id])}
                     aria-label="Remove image"
                   >
@@ -311,7 +311,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                     initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
-                    className="relative overflow-hidden rounded-2xl border bg-muted"
+                    className="relative overflow-hidden rounded-[1rem] border border-border/70 bg-muted/60"
                   >
                     <Image
                       src={preview.url}
@@ -333,7 +333,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                       </span>
                       <button
                         type="button"
-                        className="rounded-full bg-white/90 p-1.5 text-destructive"
+                        className="rounded-full bg-background/90 p-1.5 text-destructive shadow-soft"
                         onClick={() => removeSelectedFile(preview.id)}
                         aria-label="Remove selected image"
                       >
@@ -345,14 +345,14 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
               </AnimatePresence>
             </div>
           ) : (
-            <div className="mt-5 rounded-3xl border border-dashed bg-background/70 p-6 text-center text-sm text-muted-foreground">
+            <div className="mt-5 rounded-[1rem] border border-dashed border-border/70 bg-background/65 p-6 text-center text-sm text-muted-foreground">
               No photos yet. Add clear, well-lit images to make the listing stand out.
             </div>
           )}
         </section>
 
-        <section className="rounded-3xl border bg-card/88 p-5 shadow-soft sm:p-7">
-          <h2 className="text-xl font-semibold tracking-tight">Listing details</h2>
+        <section className="surface-panel p-5 sm:p-7">
+          <h2 className="font-display text-xl font-semibold tracking-tight">Listing details</h2>
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             <label className="sm:col-span-2">
               <span className="mb-2 block text-sm font-medium">Product title</span>
@@ -379,10 +379,10 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
                       className={cn(
-                        "rounded-2xl border px-4 py-3 text-left text-sm transition",
+                        "rounded-[1rem] border px-4 py-3 text-left text-sm transition",
                         selected
-                          ? "border-primary bg-primary/10 text-primary shadow-sm"
-                          : "bg-card/80 hover:border-primary/40 hover:bg-primary/5",
+                          ? "border-primary bg-primary/10 text-primary shadow-soft"
+                          : "border-border/70 bg-background/60 hover:border-primary/40 hover:bg-primary/5",
                       )}
                     >
                       <span className="block font-medium">{category.name}</span>
@@ -419,7 +419,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
               />
             </label>
 
-            <label className="flex h-12 items-center gap-3 self-end rounded-2xl border bg-card/85 px-4 text-sm font-medium shadow-sm">
+            <label className="flex h-12 items-center gap-3 self-end rounded-[1rem] border border-border/70 bg-background/75 px-4 text-sm font-medium shadow-soft">
               <input
                 name="is_negotiable"
                 type="checkbox"
@@ -458,7 +458,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                 defaultValue={listing?.description}
                 maxLength={5000}
                 className={cn(
-                  "min-h-40 w-full rounded-3xl border bg-card/85 px-4 py-3 text-sm shadow-sm outline-none transition",
+                  "min-h-40 w-full rounded-[1rem] border border-border/70 bg-background/75 px-4 py-3 text-sm shadow-soft outline-none transition",
                   "placeholder:text-muted-foreground/70 focus:ring-2 focus:ring-ring",
                 )}
                 placeholder="Mention condition, included accessories, pickup details, and anything buyers should know."
@@ -470,15 +470,15 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
       </div>
 
       <aside className="lg:sticky lg:top-28 lg:self-start">
-        <div className="rounded-3xl border bg-card/88 p-5 shadow-soft">
-          <h2 className="text-lg font-semibold tracking-tight">Publish checklist</h2>
+        <div className="surface-panel p-5">
+          <h2 className="font-display text-lg font-semibold tracking-tight">Publish checklist</h2>
           <div className="mt-4 space-y-3 text-sm text-muted-foreground">
             <p>Use real photos taken on campus.</p>
             <p>Mark the price negotiable if you are open to offers.</p>
             <p>WhatsApp contact should be reachable for verified GBU students.</p>
           </div>
           {isUploading ? (
-            <div className="mt-5 rounded-2xl border bg-muted/40 p-4 text-sm text-muted-foreground">
+            <div className="mt-5 rounded-[1rem] border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2 text-foreground">
                 <WandSparkles className="size-4 text-primary" />
                 Uploading photos...

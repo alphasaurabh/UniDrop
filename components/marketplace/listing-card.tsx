@@ -25,16 +25,16 @@ export function ListingCard({
   showSeller = true,
 }: ListingCardProps) {
   const coverImage = listing.images[0]?.publicUrl;
-  const sellerName = listing.seller?.username ?? "GBU student";
+  const sellerName = listing.seller?.full_name || listing.seller?.username || "GBU Student";
 
   return (
     <motion.article
-      whileHover={{ y: -5 }}
-      transition={{ type: "spring", stiffness: 260, damping: 24 }}
-      className="group overflow-hidden rounded-3xl border bg-card shadow-soft"
+      whileHover={{ y: -6 }}
+      transition={{ type: "spring", stiffness: 240, damping: 22 }}
+      className="group overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl"
     >
       <Link href={`/marketplace/${listing.id}`} className="block">
-        <div className="relative overflow-hidden bg-muted">
+        <div className="relative overflow-hidden bg-muted/70">
           {coverImage ? (
             <Image
               src={coverImage}
@@ -42,31 +42,31 @@ export function ListingCard({
               width={900}
               height={650}
               className={cn(
-                "h-64 w-full object-cover transition duration-500 group-hover:scale-105",
-                compact && "h-48",
+                "aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105",
+                compact && "aspect-[4/3]",
               )}
             />
           ) : (
-            <div className={cn("flex h-64 w-full items-center justify-center bg-muted", compact && "h-48")}>
+            <div className={cn("flex aspect-[4/3] w-full items-center justify-center bg-muted/70", compact && "aspect-[4/3]") }>
               <Tag className="size-10 text-muted-foreground" />
             </div>
           )}
-          <div className="absolute bottom-4 left-4 flex gap-2">
-            <Badge>{formatListingConditionLabel(listing.condition)}</Badge>
+          <div className="absolute left-4 top-4 flex gap-2">
+            <Badge className="bg-background/80 text-foreground shadow-soft backdrop-blur-xl">{formatListingConditionLabel(listing.condition)}</Badge>
             <Badge variant="soft">{formatPostedTime(listing.created_at)}</Badge>
           </div>
           {listing.status === "sold" ? (
-            <div className="absolute inset-0 grid place-items-center bg-white/70 backdrop-blur-sm">
-              <Badge>Sold</Badge>
+            <div className="absolute inset-0 grid place-items-center bg-background/55 backdrop-blur-md">
+              <Badge className="px-4 py-2 text-sm">Sold</Badge>
             </div>
           ) : null}
         </div>
       </Link>
 
-      <div className="space-y-4 p-5">
+      <div className="space-y-4 p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <Link href={`/marketplace/${listing.id}`} className="min-w-0">
-            <h3 className="line-clamp-1 text-base font-semibold tracking-tight">
+            <h3 className="line-clamp-1 font-display text-lg font-semibold tracking-tight">
               {listing.title}
             </h3>
             {showSeller ? (

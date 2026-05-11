@@ -3,6 +3,7 @@ import { Chrome, GraduationCap, ShieldCheck } from "lucide-react";
 
 import { PasswordInput } from "@/components/auth/password-input";
 import { SubmitButton } from "@/components/auth/submit-button";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
@@ -24,19 +25,27 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
 
   return (
-    <Container className="grid min-h-[calc(100vh-6rem)] items-center gap-8 py-10 lg:grid-cols-[1fr_0.9fr]">
+    <Container className="grid min-h-[calc(100vh-6rem)] items-center gap-8 py-10 lg:grid-cols-[1.05fr_0.95fr]">
       <div className="hidden lg:block">
-        <div className="rounded-[2rem] border bg-[#fff8ec]/82 p-10 shadow-glow">
-          <GraduationCap className="size-10 text-primary" />
-          <h1 className="mt-8 text-5xl font-semibold tracking-tight">
+        <div className="surface-elevated p-10">
+          <Badge variant="soft" className="rounded-full px-4 py-2">
+            Premium access
+          </Badge>
+          <GraduationCap className="mt-8 size-10 text-primary" />
+          <h1 className="mt-8 font-display text-5xl font-semibold tracking-tight">
             Trade with students you can actually recognize.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">
             Log in to save listings, manage posts, and keep your campus marketplace activity in one calm place.
           </p>
           <div className="mt-10 grid grid-cols-2 gap-4">
-            {["Campus verified", "Saved listings", "Secure sessions", "Local exchange"].map((item) => (
-              <div key={item} className="rounded-3xl border bg-white/70 p-4 text-sm font-medium shadow-sm">
+            {[
+              "Campus verified",
+              "Saved listings",
+              "Secure sessions",
+              "Local exchange",
+            ].map((item) => (
+              <div key={item} className="rounded-[1rem] border border-border/70 bg-background/70 p-4 text-sm font-medium shadow-soft backdrop-blur-xl">
                 <ShieldCheck className="mb-3 size-5 text-primary" />
                 {item}
               </div>
@@ -46,18 +55,23 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       </div>
 
       <Card className="mx-auto w-full max-w-md p-6 sm:p-8">
-        <h2 className="text-3xl font-semibold tracking-tight">Welcome back</h2>
+        <Badge variant="soft" className="rounded-full px-4 py-2">
+          Welcome back
+        </Badge>
+        <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight">
+          Continue your campus marketplace flow.
+        </h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Continue to your premium campus marketplace.
+          Sign in to save listings, manage posts, and keep your activity in one calm place.
         </p>
 
         {params.message ? (
-          <p className="mt-5 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+          <p className="mt-5 surface-panel px-4 py-3 text-sm text-primary">
             {params.message}
           </p>
         ) : null}
         {params.error ? (
-          <p className="mt-5 rounded-2xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <p className="mt-5 surface-panel px-4 py-3 text-sm text-destructive">
             {params.error}
           </p>
         ) : null}

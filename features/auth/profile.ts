@@ -107,7 +107,22 @@ function getUserFullName(user: User) {
   const metadata = getUserMetadata(user);
   const metadataName = getMetadataString(metadata, ["full_name", "name", "display_name"]);
 
-  return metadataName || user.email?.split("@")[0] || "CampusLoop Student";
+  if (metadataName) {
+    return metadataName;
+  }
+
+  // For Google OAuth, try to extract from the provider's name field
+  if (user.identities) {
+    const googleIdentity = user.identities.find((id) => id.provider === "google");
+    if (googleIdentity?.identity_data?.name) {
+      const googleName = String(googleIdentity.identity_data.name).trim();
+      if (googleName) {
+        return googleName;
+      }
+    }
+  }
+
+  return user.email?.split("@")[0] || "GBU Student";
 }
 
 function getUserUsername(user: User) {
