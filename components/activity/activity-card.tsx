@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageCircle, Plus, CheckCircle } from "lucide-react";
+import { createElement } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/features/activity/format";
@@ -39,7 +40,7 @@ function FeedbackCard({ feedback, compact }: { feedback: Feedback; compact: bool
         "leading-relaxed text-foreground/90",
         compact ? "text-sm" : "text-base"
       )}>
-        "{feedback.feedback_text}"
+        &quot;{feedback.feedback_text}&quot;
       </p>
       <div className="mt-4 flex items-center justify-between gap-4">
         <div>
@@ -101,7 +102,7 @@ function ActivityEventCard({
     )}>
       <div className="flex gap-4">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          {icon && <icon className="size-5" />}
+           {typeof icon !== 'undefined' ? createElement(icon, { className: "size-5" }) : null}
         </div>
         <div className="flex-1 min-w-0">
           <p className={cn(

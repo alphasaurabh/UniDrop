@@ -1,4 +1,15 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions - UniDrop Student Marketplace",
+  description:
+    "Read UniDrop's complete terms and conditions for using our student marketplace platform, including user responsibilities, prohibited activities, and dispute policies.",
+  openGraph: {
+    title: "Terms & Conditions - UniDrop",
+    description: "UniDrop marketplace terms and conditions for students.",
+  },
+};
 
 export default function TermsPage() {
   return (

@@ -1,4 +1,4 @@
-import type { User } from "@supabase/supabase-js";
+import type { User, SupabaseClient } from "@supabase/supabase-js";
 
 import {
   ACTIVE_COLLEGE_LOOKUP_ERROR_MESSAGE,
@@ -69,6 +69,7 @@ type ProfileUpsertClient = {
 
 export type SupabaseClientLike = CollegeLookupClient & ProfileWriteClient;
 export type SupabaseAdminLike = CollegeLookupClient & AdminProfileWriteClient;
+export type SupabaseLike = SupabaseClient | SupabaseClientLike;
 
 type UserMetadata = Record<string, unknown>;
 
@@ -238,4 +239,23 @@ export async function ensureUserProfile(supabase: SupabaseClientLike, user: User
     collegeId: college.id,
     emailDomain: getEmailDomain(user.email),
   };
+}
+
+/**
+ * Return an authenticated user and a Supabase client for server actions.
+ * Throws when no user is authenticated.
+ */
+export async function requireUser() {
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("User must be authenticated");
+  }
+
+  return { supabase, user };
 }

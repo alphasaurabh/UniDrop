@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import type { Metadata } from "next";
 
 import { ListingsGrid } from "@/components/marketplace/listings-grid";
 import { MarketplaceFilters } from "@/components/marketplace/marketplace-filters";
@@ -9,10 +10,7 @@ import { Container } from "@/components/ui/container";
 import { getListings, getSavedListingIds } from "@/features/marketplace/queries";
 import { loadMoreListings } from "@/features/marketplace/actions";
 import { createClient } from "@/lib/supabase/server";
-
-export const metadata = {
-  title: "Marketplace",
-};
+import { generateBreadcrumbSchema, embedStructuredData } from "@/lib/seo/structured-data";
 
 type MarketplacePageProps = {
   searchParams: Promise<{
@@ -24,6 +22,87 @@ type MarketplacePageProps = {
     message?: string;
   }>;
 };
+
+export async function generateMetadata({ searchParams }: MarketplacePageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const supabase = await createClient();
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://unidrop.app";
+
+  // Get total count of listings
+  const { count } = await supabase
+    .from("listings")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active");
+
+  const searchQuery = params.q || "";
+  const categoryFilter = params.category || "";
+  const totalListings = count || 0;
+
+  // Generate dynamic title and description based on filters
+  let title = "Marketplace - Buy & Sell on UniDrop";
+  let description =
+    `Browse ${totalListings} verified listings from students on UniDrop. Find laptops, books, furniture, and more at your campus marketplace.`;
+
+  if (categoryFilter) {
+    title = `${categoryFilter} for Sale - UniDrop Student Marketplace`;
+    description = `Browse ${totalListings} ${categoryFilter.toLowerCase()} listings on UniDrop. Buy affordable ${categoryFilter.toLowerCase()} from verified campus students.`;
+  }
+
+  if (searchQuery) {
+    title = `${searchQuery} - Search Results on UniDrop Marketplace`;
+    description = `Search results for "${searchQuery}" on UniDrop student marketplace. Find verified items from campus students.`;
+  }
+
+  if (categoryFilter && searchQuery) {
+    title = `${searchQuery} in ${categoryFilter} - UniDrop Marketplace`;
+    description = `${searchQuery} in ${categoryFilter} - Buy from verified campus students on UniDrop.`;
+  }
+
+  const url = new URL("/marketplace", baseUrl);
+  if (searchQuery) url.searchParams.set("q", searchQuery);
+  if (categoryFilter) url.searchParams.set("category", categoryFilter);
+
+  const breadcrumbs = generateBreadcrumbSchema([
+    { name: "Home", url: baseUrl },
+    { name: "Marketplace" },
+  ]);
+
+  return {
+    title,
+    description,
+    keywords: [
+      "marketplace",
+      "buy and sell",
+      "student marketplace",
+      "campus marketplace",
+      "college trading",
+      categoryFilter || "items",
+      searchQuery || "listings",
+    ].filter(Boolean),
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: url.toString(),
+      images: [
+        {
+          url: `${baseUrl}/og-image.png`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+    other: {
+      ...embedStructuredData(breadcrumbs).other,
+    },
+  };
+}
+
 
 export default async function MarketplacePage({ searchParams }: MarketplacePageProps) {
   const params = await searchParams;

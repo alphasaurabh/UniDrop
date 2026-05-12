@@ -1,10 +1,10 @@
 "use server";
 
-import type { SupabaseLike } from "@/features/auth/profile";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Feedback, MarketplaceActivity } from "./types";
 
 export async function getPublicFeedbacks(
-  supabase: SupabaseLike,
+  supabase: SupabaseClient,
   limit: number = 10
 ): Promise<Feedback[]> {
   const { data, error } = await supabase
@@ -18,7 +18,7 @@ export async function getPublicFeedbacks(
 }
 
 export async function getMarketplaceActivity(
-  supabase: SupabaseLike,
+  supabase: SupabaseClient,
   limit: number = 10
 ): Promise<MarketplaceActivity[]> {
   const { data, error } = await supabase
@@ -31,7 +31,7 @@ export async function getMarketplaceActivity(
 }
 
 export async function getActivityFeed(
-  supabase: SupabaseLike,
+  supabase: SupabaseClient,
   limit: number = 15
 ): Promise<(Feedback | MarketplaceActivity)[]> {
   const [feedbacks, activities] = await Promise.all([
@@ -49,7 +49,7 @@ export async function getActivityFeed(
 }
 
 export async function getUserFeedbacks(
-  supabase: SupabaseLike,
+  supabase: SupabaseClient,
   userId: string
 ): Promise<Feedback[]> {
   const { data, error } = await supabase

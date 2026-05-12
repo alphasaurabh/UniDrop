@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import type { Metadata } from "next";
 
 import { ListingForm } from "@/components/marketplace/listing-form";
 import { createClient } from "@/lib/supabase/server";
@@ -7,8 +8,23 @@ import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { createListing } from "@/features/marketplace/actions";
 
-export const metadata = {
-  title: "Sell",
+export const metadata: Metadata = {
+  title: "Sell an Item - List for Free on UniDrop Student Marketplace",
+  description:
+    "List items for free on UniDrop. Post your books, electronics, furniture, and more to reach verified campus students instantly. Upload photos, set your price, and start selling in minutes.",
+  keywords: [
+    "sell online",
+    "sell items",
+    "marketplace seller",
+    "list for free",
+    "student selling",
+    "campus marketplace",
+  ],
+  openGraph: {
+    title: "Sell on UniDrop - List Items for Free on Campus Marketplace",
+    description: "Post items for sale to verified campus students. Free listing, instant visibility, and secure exchanges.",
+    type: "website",
+  },
 };
 
 type SellPageProps = {

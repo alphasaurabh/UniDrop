@@ -1,7 +1,8 @@
-import { CalendarDays, Heart, MapPin, MessageCircle, ShieldCheck, Tag, User } from "lucide-react";
+import { CalendarDays, Heart, MapPin, MessageCircle, ShieldCheck, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 import { ListingCard } from "@/components/marketplace/listing-card";
 import { ReportDialog } from "@/components/marketplace/report-dialog";
@@ -20,6 +21,7 @@ import {
 import { formatListingConditionLabel } from "@/features/marketplace/constants";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { generateListingSchema, embedStructuredData, generateBreadcrumbSchema } from "@/lib/seo/structured-data";
 
 type ListingDetailPageProps = {
   params: Promise<{
@@ -29,6 +31,87 @@ type ListingDetailPageProps = {
     message?: string;
   }>;
 };
+
+export async function generateMetadata({ params }: ListingDetailPageProps): Promise<Metadata> {
+  const { listingId } = await params;
+  const supabase = await createClient();
+  const listing = await getListingById(supabase, listingId);
+
+  if (!listing) {
+    return {
+      title: "Listing Not Found | UniDrop",
+    };
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://unidrop.app";
+  const price = (listing.price / 100).toFixed(0);
+  const description = listing.description?.substring(0, 155) || `${listing.title} for ₹${price} on UniDrop student marketplace`;
+  const image = listing.images?.[0]?.publicUrl || `${baseUrl}/og-image.png`;
+
+  // Map condition to schema format
+  const conditionMap: Record<string, "NewCondition" | "RefurbishedCondition" | "UsedCondition"> = {
+    new: "NewCondition",
+    like_new: "RefurbishedCondition",
+    good: "UsedCondition",
+    fair: "UsedCondition",
+    poor: "UsedCondition",
+  };
+
+  const listingSchema = generateListingSchema({
+    title: listing.title,
+    description: listing.description,
+    price: listing.price,
+    condition: conditionMap[listing.condition] || "UsedCondition",
+    seller: {
+      name: listing.seller?.full_name || listing.seller?.username,
+    },
+    image: listing.images?.map((img) => img.publicUrl),
+    url: `${baseUrl}/marketplace/${listingId}`,
+  });
+
+  const breadcrumbs = generateBreadcrumbSchema([
+    { name: "Home", url: baseUrl },
+    { name: "Marketplace", url: `${baseUrl}/marketplace` },
+    { name: listing.category?.name || "Items" },
+    { name: listing.title },
+  ]);
+
+  return {
+    title: `${listing.title} - Buy on UniDrop | ₹${price}`,
+    description,
+    keywords: [
+      listing.title,
+      listing.category?.name || "items",
+      "student marketplace",
+      "buy on campus",
+      "GBU marketplace",
+    ],
+    openGraph: {
+      title: `${listing.title} - UniDrop Student Marketplace`,
+      description,
+      type: "website",
+      url: `${baseUrl}/marketplace/${listingId}`,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: listing.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${listing.title} - ₹${price}`,
+      description,
+      images: [image],
+    },
+    other: {
+      ...embedStructuredData(listingSchema).other,
+      ...embedStructuredData(breadcrumbs).other,
+    },
+  };
+}
 
 export default async function ListingDetailPage({
   params,

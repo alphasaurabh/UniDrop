@@ -1,0 +1,52 @@
+# UniDrop Student Marketplace - Robots Exclusion Protocol
+# This file tells search engines which pages to index and which to exclude
+
+User-agent: *
+Allow: /
+Allow: /marketplace
+Allow: /marketplace/*
+Allow: /about
+Allow: /terms
+Allow: /privacy
+Disallow: /admin
+Disallow: /account
+Disallow: /profile
+Disallow: /account/*
+Disallow: /auth
+Disallow: /auth/*
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /_next
+Disallow: /api/private
+Disallow: /*.json$
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+Disallow: /search
+
+# Sitemap location
+Sitemap: https://unidrop.app/sitemap.xml
+
+# Crawl delay for respectful crawling (optional, most search engines ignore)
+Crawl-delay: 1
+
+# User-agent specific rules for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# User-agent specific rules for Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

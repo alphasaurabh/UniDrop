@@ -1,13 +1,19 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 
 import { Badge } from "@/components/ui/badge";
 import { SignupForm } from "@/components/auth/signup-form";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 
-export const metadata = {
-  title: "Sign up",
+export const metadata: Metadata = {
+  title: "Join UniDrop - Create Free Campus Marketplace Account",
+  description: "Sign up for UniDrop and join thousands of verified students buying and selling on campus. Free account creation with college email verification.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 type SignupPageProps = {

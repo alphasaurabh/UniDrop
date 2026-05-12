@@ -22,7 +22,7 @@ export function FeedbackManager({ feedbacks }: FeedbackManagerProps) {
     return (
       <div className="rounded-[1.25rem] border border-border/70 bg-card/50 p-8 text-center">
         <p className="text-muted-foreground">
-          You haven't shared any feedback yet. Help other students by sharing your UniDrop experience!
+          You haven&apos;t shared any feedback yet. Help other students by sharing your UniDrop experience!
         </p>
       </div>
     );

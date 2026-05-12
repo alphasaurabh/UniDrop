@@ -1,4 +1,5 @@
 import { Edit3, Package, Plus, Trash2 } from "lucide-react";
+import type { Metadata } from "next";
 
 import { ListingCard } from "@/components/marketplace/listing-card";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +14,13 @@ import {
 import { getMyListings } from "@/features/marketplace/queries";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = {
-  title: "Account",
+export const metadata: Metadata = {
+  title: "Manage Listings - UniDrop Account",
+  description: "View and manage your UniDrop listings. Edit, delete, or mark items as sold.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 type AccountPageProps = {

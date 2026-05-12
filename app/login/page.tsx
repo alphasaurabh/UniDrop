@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Chrome, GraduationCap, ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 
 import { PasswordInput } from "@/components/auth/password-input";
 import { SubmitButton } from "@/components/auth/submit-button";
@@ -9,8 +10,13 @@ import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { login, signInWithGoogle } from "@/features/auth/actions";
 
-export const metadata = {
-  title: "Log in",
+export const metadata: Metadata = {
+  title: "Log in to UniDrop",
+  description: "Sign in to your UniDrop account to access your listings and saved items.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 type LoginPageProps = {

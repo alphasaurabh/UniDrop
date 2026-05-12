@@ -5,6 +5,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { GlobalBackground } from "@/components/ui/global-background";
+import { defaultMetadata } from "@/lib/seo/metadata";
+import { generateOrganizationSchema, embedStructuredData } from "@/lib/seo/structured-data";
 import "./globals.css";
 
 const bodyFont = Manrope({
@@ -18,11 +20,10 @@ const displayFont = Sora({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "UniDrop",
-    template: "%s | UniDrop",
+  ...defaultMetadata,
+  other: {
+    ...embedStructuredData(generateOrganizationSchema()).other,
   },
-  description: "Modern campus marketplace for buying and selling within student communities.",
 };
 
 export default function RootLayout({

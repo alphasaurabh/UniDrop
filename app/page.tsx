@@ -12,6 +12,8 @@ import {
   Github,
   Globe,
 } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 import { FadeIn } from "@/components/motion/fade-in";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +23,7 @@ import { Container } from "@/components/ui/container";
 import { ActivityFeed } from "@/components/activity/activity-feed";
 import { LISTING_CATEGORIES } from "@/features/marketplace/constants";
 import { createClient } from "@/lib/supabase/server";
+import { generateBreadcrumbSchema, embedStructuredData } from "@/lib/seo/structured-data";
 
 const trustItems = [
   {
@@ -54,6 +57,42 @@ async function getTotalActiveListings() {
 
   return count ?? 0;
 }
+
+export const metadata: Metadata = {
+  title: "UniDrop - Student Marketplace for Campus Trading | Buy & Sell Verified Locally",
+  description:
+    "UniDrop is a trusted student marketplace for buying and selling items at Gautam Buddha University. Join verified students trading locally with campus-first trust, premium photos, and secure exchanges.",
+  keywords: [
+    "student marketplace",
+    "college marketplace",
+    "campus marketplace",
+    "buy and sell in college",
+    "GBU marketplace",
+    "second hand items",
+    "college exchange",
+    "campus trading",
+  ],
+  openGraph: {
+    title: "UniDrop - Student Marketplace for Campus Trading",
+    description:
+      "Buy and sell verified items across campus. UniDrop is the premium student marketplace for Gautam Buddha University.",
+    type: "website",
+    images: [
+      {
+        url: "https://unidrop.app/og-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  other: {
+    ...embedStructuredData(
+      generateBreadcrumbSchema([
+        { name: "Home", url: "https://unidrop.app" },
+      ])
+    ).other,
+  },
+};
 
 export default async function HomePage() {
   const totalActiveListings = await getTotalActiveListings();
@@ -249,7 +288,7 @@ export default async function HomePage() {
                   Real students, real feedback, real marketplace momentum.
                 </h2>
                 <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">
-                  See what's happening on UniDrop right now. Listings, sales, and community feedback from verified students.
+                  See what&apos;s happening on UniDrop right now. Listings, sales, and community feedback from verified students.
                 </p>
               </div>
             </FadeIn>
@@ -300,11 +339,11 @@ export default async function HomePage() {
             <div className="space-y-4">
               <h3 className="text-sm font-semibold">Quick links</h3>
               <ul className="grid gap-2 text-sm text-muted-foreground">
-                <li><a href="/marketplace" className="hover:underline">Marketplace</a></li>
-                <li><a href="/sell" className="hover:underline">Sell</a></li>
-                <li><a href="/saved" className="hover:underline">Saved</a></li>
-                <li><a href="/account" className="hover:underline">Account</a></li>
-                <li><a href="/terms" className="hover:underline">Terms &amp; Conditions</a></li>
+                <li><Link href="/marketplace" className="hover:underline">Marketplace</Link></li>
+                <li><Link href="/sell" className="hover:underline">Sell</Link></li>
+                <li><Link href="/saved" className="hover:underline">Saved</Link></li>
+                <li><Link href="/account" className="hover:underline">Account</Link></li>
+                <li><Link href="/terms" className="hover:underline">Terms &amp; Conditions</Link></li>
               </ul>
             </div>
 
