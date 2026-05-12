@@ -1,13 +1,12 @@
 "use client";
 
 import { Heart, MapPin, Tag } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useTransition, useState } from "react";
+import { useTransition, useState, useEffect } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { formatListingConditionLabel } from "@/features/marketplace/constants";
 import { toggleSaveListing } from "@/features/marketplace/actions";
 import { formatPostedTime, formatPrice } from "@/features/marketplace/format";
@@ -27,6 +26,12 @@ export function ListingCard({
 }: ListingCardProps) {
   const [isSaved, setIsSaved] = useState(listing.isSaved);
   const [isPending, startTransition] = useTransition();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
+
   const coverImage = listing.images[0]?.publicUrl;
   const sellerName = listing.seller?.full_name || listing.seller?.username || "GBU Student";
 
@@ -43,12 +48,13 @@ export function ListingCard({
     });
   };
 
+  // Disable animations on mobile for better performance
+  const whileHoverProps = isMobile ? {} : { whileHover: { y: -6 } as TargetAndTransition };
+
   return (
     <motion.article
-      whileHover={{ y: -6 }}
-      whileTap={{ scale: 0.995 }}
-      transition={{ type: "spring", stiffness: 240, damping: 22 }}
-      className="group overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl touch-target"
+      {...whileHoverProps}
+      className="group overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-lg md:backdrop-blur-xl touch-target gpu-accelerate"
     >
       <Link href={`/marketplace/${listing.id}`} className="block">
         <div className="relative overflow-hidden bg-muted/70">
@@ -58,18 +64,19 @@ export function ListingCard({
               alt={listing.title}
               width={900}
               height={650}
+              loading="lazy"
               className={cn(
-                "aspect-[16/9] w-full object-cover transition duration-700 group-hover:scale-105",
+                "aspect-[16/9] w-full object-cover transition duration-500 md:duration-700 md:group-hover:scale-105",
                 compact ? "aspect-[4/3]" : "",
               )}
             />
           ) : (
-            <div className={cn("flex aspect-[4/3] w-full items-center justify-center bg-muted/70", compact && "aspect-[4/3]") }>
+            <div className={cn("flex aspect-[4/3] w-full items-center justify-center bg-muted/70", compact && "aspect-[4/3]")}>
               <Tag className="size-10 text-muted-foreground" />
             </div>
           )}
           <div className="absolute left-4 top-4 flex gap-2">
-            <Badge className="bg-background/80 text-foreground shadow-soft backdrop-blur-xl">{formatListingConditionLabel(listing.condition)}</Badge>
+            <Badge className="bg-background/80 text-foreground shadow-soft backdrop-blur-lg md:backdrop-blur-xl">{formatListingConditionLabel(listing.condition)}</Badge>
             <Badge variant="soft">{formatPostedTime(listing.created_at)}</Badge>
           </div>
           {/* Price overlay */}

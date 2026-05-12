@@ -39,7 +39,7 @@ export default function RootLayout({
             <GlobalBackground />
             <div className="relative z-10 flex min-h-screen flex-col">
               <Navbar />
-              <main className="flex-1 pb-safe-bottom lg:pb-0">{children}</main>
+              <main className="flex-1">{children}</main>
             </div>
           </ToastProvider>
         </ThemeProvider>

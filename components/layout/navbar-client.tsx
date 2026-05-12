@@ -296,29 +296,6 @@ export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
         </Container>
       </header>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex justify-center pointer-events-none lg:hidden">
-        <div className="pointer-events-auto floating-bottom-nav glass-nav grid grid-cols-4 gap-1 px-3 py-2 shadow-elevated touch-target">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 transition-transform active:scale-95"
-                title={item.label}
-                onClick={closeAllMenus}
-              >
-                <div className="relative flex h-10 w-10 items-center justify-center rounded-lg transition-colors group-hover:bg-primary/10">
-                  <Icon className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
-                </div>
-                <span className="text-[11px] font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
     </>
   );
 }
