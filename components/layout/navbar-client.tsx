@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bookmark,
@@ -86,9 +87,7 @@ export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
         <Container>
           <div className="glass-nav relative flex items-center justify-between px-5 py-3">
             <Link className="flex items-center gap-3 font-semibold tracking-tight" href="/">
-              <span className="flex size-10 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-primary-foreground shadow-soft">
-                UD
-              </span>
+              <Image src="/logo.svg" alt="UniDrop" width={40} height={40} priority className="size-10 shrink-0 object-contain" />
               <span className="font-display text-lg">UniDrop</span>
             </Link>
 
@@ -196,9 +195,7 @@ export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
         <Container>
           <div className="flex items-center justify-between gap-3 px-4 py-3">
             <Link className="flex items-center gap-2 font-semibold" href="/">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
-                UD
-              </span>
+              <Image src="/logo.svg" alt="UniDrop" width={32} height={32} priority className="size-8 shrink-0 object-contain" />
             </Link>
 
             <div className="flex flex-1 items-center justify-center gap-2">

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 import { FadeIn } from "@/components/motion/fade-in";
 import { Badge } from "@/components/ui/badge";
@@ -304,7 +305,7 @@ export default async function HomePage() {
           <div className="grid gap-8 sm:grid-cols-3">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-primary-foreground shadow-soft">UD</span>
+                <Image src="/logo.svg" alt="UniDrop" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
                 <div>
                   <p className="font-display text-lg font-semibold">UniDrop</p>
                   <p className="text-sm text-muted-foreground">Premium campus marketplace</p>

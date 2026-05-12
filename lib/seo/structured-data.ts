@@ -99,7 +99,7 @@ export function generateOrganizationSchema(): OrganizationSchema {
     "@type": "Organization",
     name: siteName,
     url: baseUrl,
-    logo: `${baseUrl}/logo.png`,
+    logo: `${baseUrl}/logo.svg`,
     description:
       "UniDrop is a trusted student marketplace for buying and selling items across campus.",
     sameAs: [
