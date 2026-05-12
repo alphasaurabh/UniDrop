@@ -299,29 +299,6 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="pb-16 pt-10">
-        <Container>
-          <FadeIn>
-            <div className="surface-elevated overflow-hidden px-7 py-8 sm:px-10 sm:py-12">
-              <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-                <div>
-                  <Badge variant="soft" className="mb-4 rounded-full px-4 py-2">Ready for launch</Badge>
-                  <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-5xl">
-                    UniDrop should feel premium the moment it opens.
-                  </h2>
-                  <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                    This is a focused marketplace for real student exchange, rebuilt to feel calm, trustworthy, and launch-ready.
-                  </p>
-                </div>
-                <Button asChild href="/signup" size="lg">
-                  Join UniDrop
-                </Button>
-              </div>
-            </div>
-          </FadeIn>
-        </Container>
-      </section>
-
       <footer className="border-t border-border/70 py-10">
         <Container>
           <div className="grid gap-8 sm:grid-cols-3">
@@ -339,10 +316,6 @@ export default async function HomePage() {
             <div className="space-y-4">
               <h3 className="text-sm font-semibold">Quick links</h3>
               <ul className="grid gap-2 text-sm text-muted-foreground">
-                <li><Link href="/marketplace" className="hover:underline">Marketplace</Link></li>
-                <li><Link href="/sell" className="hover:underline">Sell</Link></li>
-                <li><Link href="/saved" className="hover:underline">Saved</Link></li>
-                <li><Link href="/account" className="hover:underline">Account</Link></li>
                 <li><Link href="/terms" className="hover:underline">Terms &amp; Conditions</Link></li>
               </ul>
             </div>
