@@ -99,7 +99,7 @@ export function ListingsGrid({
               Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={`skeleton-${i}`}
-                  className="overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl"
+                  className="overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/88 shadow-soft backdrop-blur-sm"
                 >
                   <Skeleton className="h-56 w-full rounded-none sm:h-64" />
                   <div className="space-y-4 p-5">

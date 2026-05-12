@@ -7,8 +7,8 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
 };
 
 const variants = {
-  default: "bg-card/80 text-foreground border-border/70 backdrop-blur-xl px-3 py-1 text-xs font-medium",
-  soft: "bg-primary/10 text-primary border-primary/15 backdrop-blur-xl",
+  default: "bg-card/88 text-foreground border-border/70 px-3 py-1 text-xs font-medium",
+  soft: "bg-primary/10 text-primary border-primary/15",
   dark: "bg-foreground text-background border border-foreground/10",
 };
 

@@ -47,7 +47,7 @@ export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="rounded-[1.25rem] border border-border/70 bg-card/50 p-5 shadow-soft backdrop-blur-xl">
+      <div className="rounded-[1.25rem] border border-border/70 bg-card/88 p-5 shadow-soft backdrop-blur-sm">
         <label className="block text-sm font-medium text-foreground mb-3">
           Share your UniDrop experience
         </label>

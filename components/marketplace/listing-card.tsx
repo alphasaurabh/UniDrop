@@ -1,10 +1,9 @@
 "use client";
 
 import { Heart, MapPin, Tag } from "lucide-react";
-import { motion, type TargetAndTransition } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useTransition, useState, useEffect } from "react";
+import { memo, useState, useTransition } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { formatListingConditionLabel } from "@/features/marketplace/constants";
@@ -19,18 +18,13 @@ type ListingCardProps = {
   showSeller?: boolean;
 };
 
-export function ListingCard({
+export const ListingCard = memo(function ListingCard({
   listing,
   compact = false,
   showSeller = true,
 }: ListingCardProps) {
   const [isSaved, setIsSaved] = useState(listing.isSaved);
   const [isPending, startTransition] = useTransition();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth <= 768);
-  }, []);
 
   const coverImage = listing.images[0]?.publicUrl;
   const sellerName = listing.seller?.full_name || listing.seller?.username || "GBU Student";
@@ -48,14 +42,8 @@ export function ListingCard({
     });
   };
 
-  // Disable animations on mobile for better performance
-  const whileHoverProps = isMobile ? {} : { whileHover: { y: -6 } as TargetAndTransition };
-
   return (
-    <motion.article
-      {...whileHoverProps}
-      className="group overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-lg md:backdrop-blur-xl touch-target gpu-accelerate"
-    >
+    <article className="group overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/88 shadow-soft transition-colors duration-200 hover:border-border/90 hover:shadow-elevated touch-target">
       <Link href={`/marketplace/${listing.id}`} className="block">
         <div className="relative overflow-hidden bg-muted/70">
           {coverImage ? (
@@ -65,8 +53,9 @@ export function ListingCard({
               width={900}
               height={650}
               loading="lazy"
+              sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
               className={cn(
-                "aspect-[16/9] w-full object-cover transition duration-500 md:duration-700 md:group-hover:scale-105",
+                "aspect-[16/9] w-full object-cover transition-opacity duration-200 md:group-hover:opacity-95",
                 compact ? "aspect-[4/3]" : "",
               )}
             />
@@ -76,11 +65,11 @@ export function ListingCard({
             </div>
           )}
           <div className="absolute left-4 top-4 flex gap-2">
-            <Badge className="bg-background/80 text-foreground shadow-soft backdrop-blur-lg md:backdrop-blur-xl">{formatListingConditionLabel(listing.condition)}</Badge>
+            <Badge className="bg-background/88 text-foreground shadow-soft">{formatListingConditionLabel(listing.condition)}</Badge>
             <Badge variant="soft">{formatPostedTime(listing.created_at)}</Badge>
           </div>
           {/* Price overlay */}
-          <div className="absolute left-4 bottom-4 rounded-2xl bg-background/85 px-3 py-2 text-lg font-semibold shadow-elevated">
+          <div className="absolute left-4 bottom-4 rounded-2xl bg-background/88 px-3 py-2 text-lg font-semibold shadow-soft">
             {formatPrice(listing.price)}
           </div>
           {/* Save button overlay */}
@@ -91,11 +80,11 @@ export function ListingCard({
               aria-label={isSaved ? "Unsave" : "Save"}
               className={cn("touch-target tap-highlight transition-opacity", isPending && "opacity-60")}
             >
-              <Heart className={cn("size-5 transition-all", isSaved && "fill-rose-500 text-rose-500", !isSaved && "text-white drop-shadow-lg")} />
+              <Heart className={cn("size-5 transition-colors", isSaved && "fill-rose-500 text-rose-500", !isSaved && "text-white")} />
             </button>
           </div>
           {listing.status === "sold" ? (
-            <div className="absolute inset-0 grid place-items-center bg-background/55 backdrop-blur-md">
+            <div className="absolute inset-0 grid place-items-center bg-background/65">
               <Badge className="px-4 py-2 text-sm">Sold</Badge>
             </div>
           ) : null}
@@ -128,6 +117,8 @@ export function ListingCard({
           <span className="shrink-0 text-xs">{listing.category?.name ?? listing.category_id}</span>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
-}
+});
+
+ListingCard.displayName = "ListingCard";

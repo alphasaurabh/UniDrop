@@ -226,7 +226,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
       className="grid gap-6 lg:grid-cols-[1fr_360px]"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
       action={action}
     >
       <input ref={uploadedImagesRef} name="uploaded_images" type="hidden" defaultValue="[]" />
@@ -250,7 +250,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
 
           <div
             className={cn(
-              "rounded-[1rem] border border-dashed border-border/70 bg-background/65 p-3 transition",
+              "rounded-[1rem] border border-dashed border-border/70 bg-background/65 p-3 transition-colors duration-150 ease-out",
               dragActive && "border-primary bg-primary/5",
             )}
             onDragOver={(event) => {
@@ -264,7 +264,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
               addFiles(Array.from(event.dataTransfer.files ?? []));
             }}
           >
-            <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-[1rem] p-6 text-center transition hover:bg-muted/40">
+            <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-[1rem] p-6 text-center transition-colors duration-150 ease-out hover:bg-muted/40">
               <ImagePlus className="size-8 text-primary" />
               <span className="mt-3 text-sm font-medium">Choose product images</span>
               <span className="mt-1 text-xs text-muted-foreground">PNG, JPG, WebP up to 5 MB each</span>
@@ -308,9 +308,9 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                   <motion.div
                     key={preview.id}
                     layout
-                    initial={{ opacity: 0, scale: 0.96 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
                     className="relative overflow-hidden rounded-[1rem] border border-border/70 bg-muted/60"
                   >
                     <Image
@@ -333,7 +333,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                       </span>
                       <button
                         type="button"
-                        className="rounded-full bg-background/90 p-1.5 text-destructive shadow-soft"
+                        className="rounded-full bg-background/90 p-1.5 text-destructive shadow-soft transition-transform duration-150 ease-out active:scale-95"
                         onClick={() => removeSelectedFile(preview.id)}
                         aria-label="Remove selected image"
                       >
@@ -379,7 +379,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
                       className={cn(
-                        "rounded-[1rem] border px-4 py-3 text-left text-sm transition",
+                        "rounded-[1rem] border px-4 py-3 text-left text-sm transition-[background-color,border-color,box-shadow,color,transform] duration-150 ease-out",
                         selected
                           ? "border-primary bg-primary/10 text-primary shadow-soft"
                           : "border-border/70 bg-background/60 hover:border-primary/40 hover:bg-primary/5",
@@ -458,7 +458,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                 defaultValue={listing?.description}
                 maxLength={5000}
                 className={cn(
-                  "min-h-40 w-full rounded-[1rem] border border-border/70 bg-background/75 px-4 py-3 text-sm shadow-soft outline-none transition",
+                  "min-h-40 w-full rounded-[1rem] border border-border/70 bg-background/75 px-4 py-3 text-sm shadow-soft outline-none transition-[background-color,border-color,box-shadow,color] duration-150 ease-out",
                   "placeholder:text-muted-foreground/70 focus:ring-2 focus:ring-ring",
                 )}
                 placeholder="Mention condition, included accessories, pickup details, and anything buyers should know."

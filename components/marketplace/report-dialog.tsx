@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { Fragment, useState, useTransition } from "react";
 import { AlertCircle, Flag, X } from "lucide-react";
 
@@ -83,18 +84,29 @@ export function ReportDialog({ listingId, listingTitle }: ReportDialogProps) {
       </Button>
 
       {/* Dialog Backdrop */}
-      {state !== "closed" && (
-        <div
-          className="fixed inset-0 z-50 bg-background/55 backdrop-blur-md transition-opacity duration-200"
-          onClick={handleCloseDialog}
-          aria-hidden="true"
-        />
-      )}
+      <AnimatePresence>
+        {state !== "closed" ? (
+          <>
+            <motion.div
+              key="report-dialog-backdrop"
+              className="fixed inset-0 z-50 bg-background/60"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.14, ease: "easeOut" }}
+              onClick={handleCloseDialog}
+              aria-hidden="true"
+            />
 
-      {/* Dialog */}
-      {state !== "closed" && (
-        <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform p-4">
-          <div className="surface-elevated overflow-hidden">
+            <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform p-4">
+              <motion.div
+                key="report-dialog-panel"
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.985 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+                className="surface-elevated overflow-hidden"
+              >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border/70 px-6 py-4">
               <div>
@@ -224,9 +236,11 @@ export function ReportDialog({ listingId, listingTitle }: ReportDialogProps) {
                 </div>
               </form>
             )}
-          </div>
-        </div>
-      )}
+              </motion.div>
+            </div>
+          </>
+        ) : null}
+      </AnimatePresence>
     </Fragment>
   );
 }

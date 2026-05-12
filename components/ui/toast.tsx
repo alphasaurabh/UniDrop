@@ -59,7 +59,7 @@ export function useToast() {
 function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: string) => void }) {
   return (
     <div className="fixed bottom-6 right-6 z-[60] space-y-3 pointer-events-none">
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence initial={false} mode="sync">
         {toasts.map((toast) => (
           <Toast key={toast.id} toast={toast} onRemove={onRemove} />
         ))}
@@ -77,12 +77,11 @@ function Toast({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => vo
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      className={`pointer-events-auto flex items-center gap-3 rounded-xl px-5 py-3.5 text-white shadow-elevated backdrop-blur-xl ${bgColor}`}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.16, ease: "easeOut" }}
+      className={`pointer-events-auto flex items-center gap-3 rounded-xl border border-white/10 px-5 py-3.5 text-white shadow-soft ${bgColor}`}
     >
       <span className="text-sm font-medium">{toast.message}</span>
       <button

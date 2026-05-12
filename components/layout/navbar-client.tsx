@@ -112,7 +112,7 @@ export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
                     onClick={() => setIsProfileOpen((prev) => !prev)}
                     aria-haspopup="menu"
                     aria-label="Open profile menu"
-                    className="list-none flex cursor-pointer items-center gap-2 rounded-2xl border border-border/70 bg-card/75 px-3 py-2 text-sm font-medium shadow-soft backdrop-blur-xl transition-colors hover:bg-muted/40"
+                    className="list-none flex cursor-pointer items-center gap-2 rounded-2xl border border-border/70 bg-card/88 px-3 py-2 text-sm font-medium shadow-soft backdrop-blur-md transition-colors hover:bg-muted/40"
                   >
                     <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                       <User className="size-4" />
@@ -124,11 +124,11 @@ export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
                   <AnimatePresence>
                     {isProfileOpen ? (
                       <motion.div
-                        initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                        initial={{ opacity: 0, y: 4, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 4, scale: 0.985 }}
-                        transition={{ duration: 0.16, ease: "easeOut" }}
-                        className="absolute right-0 top-full mt-3 w-56 rounded-3xl border border-border/70 bg-card/95 p-2 shadow-elevated backdrop-blur-2xl"
+                        transition={{ duration: 0.14, ease: "easeOut" }}
+                        className="absolute right-0 top-full mt-3 w-56 origin-top-right rounded-3xl border border-border/70 bg-card/96 p-2 shadow-soft backdrop-blur-md"
                       >
                         <div className="grid gap-1">
                           <Link
@@ -191,7 +191,7 @@ export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
         </Container>
       </header>
 
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur-lg lg:hidden">
+      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/98 backdrop-blur-sm lg:hidden">
         <Container>
           <div className="flex items-center justify-between gap-3 px-4 py-3">
             <Link className="flex items-center gap-2 font-semibold" href="/">
@@ -217,11 +217,11 @@ export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
               <AnimatePresence>
                 {isMobileMenuOpen ? (
                   <motion.div
-                    initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                    initial={{ opacity: 0, y: 4, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 4, scale: 0.985 }}
-                    transition={{ duration: 0.16, ease: "easeOut" }}
-                    className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-border/70 bg-card/98 p-3 shadow-elevated backdrop-blur-lg"
+                    transition={{ duration: 0.14, ease: "easeOut" }}
+                    className="absolute right-0 top-full mt-2 w-64 origin-top-right rounded-2xl border border-border/70 bg-card/98 p-3 shadow-soft backdrop-blur-md"
                   >
                     <div className="grid gap-2">
                       <Link

@@ -199,7 +199,7 @@ export async function signupWithState(
     return {
       status: "success",
       message:
-        "Supabase is waiting for email confirmation. Confirm your Gautam Buddha University email, or add SUPABASE_SERVICE_ROLE_KEY locally for instant dev signup.",
+        "Check your university email — We’ve sent a verification link to your email address. Please verify your account to continue using UniDrop securely. Didn’t receive the email? Check your spam folder or try again in a moment.",
     };
   }
 

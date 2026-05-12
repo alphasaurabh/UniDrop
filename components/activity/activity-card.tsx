@@ -33,7 +33,7 @@ function FeedbackCard({ feedback, compact }: { feedback: Feedback; compact: bool
 
   return (
     <div className={cn(
-      "rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl transition hover:shadow-elevated",
+      "rounded-[1.25rem] border border-border/70 bg-card/88 shadow-soft backdrop-blur-sm transition hover:shadow-soft",
       compact ? "p-4 sm:p-5" : "p-6 sm:p-7"
     )}>
       <p className={cn(
@@ -97,7 +97,7 @@ function ActivityEventCard({
 
   return (
     <div className={cn(
-      "rounded-[1.25rem] border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl transition hover:shadow-elevated",
+      "rounded-[1.25rem] border border-border/70 bg-card/88 shadow-soft backdrop-blur-sm transition hover:shadow-soft",
       compact ? "p-4 sm:p-5" : "p-6 sm:p-7"
     )}>
       <div className="flex gap-4">

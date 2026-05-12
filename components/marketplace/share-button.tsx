@@ -81,8 +81,8 @@ export function ShareButton({
   };
 
   const variantClasses = {
-    default: "bg-primary/90 text-primary-foreground hover:bg-primary shadow-elevated backdrop-blur-xl",
-    outline: "border border-border/70 bg-card/50 text-foreground hover:bg-card/70 shadow-soft backdrop-blur-xl",
+    default: "bg-primary/90 text-primary-foreground hover:bg-primary shadow-soft backdrop-blur-sm",
+    outline: "border border-border/70 bg-card/80 text-foreground hover:bg-card/90 shadow-soft backdrop-blur-sm",
   };
 
   return (
@@ -90,9 +90,9 @@ export function ShareButton({
       onClick={handleShare}
       disabled={isSharing}
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200",
+        "inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200",
         "disabled:opacity-60 disabled:cursor-not-allowed",
-        "hover:scale-105 active:scale-95",
+        "active:scale-95",
         sizeClasses[size],
         variantClasses[variant],
       )}
