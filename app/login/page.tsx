@@ -10,6 +10,10 @@ import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { login, signInWithGoogle } from "@/features/auth/actions";
 
+function getSafeLoginErrorMessage() {
+  return "We couldn’t sign you in. Check your email and password, then try again.";
+}
+
 export const metadata: Metadata = {
   title: "Log in to UniDrop",
   description: "Sign in to your UniDrop account to access your listings and saved items.",
@@ -78,7 +82,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         ) : null}
         {params.error ? (
           <p className="mt-5 surface-panel px-4 py-3 text-sm text-destructive">
-            {params.error}
+            {getSafeLoginErrorMessage()}
           </p>
         ) : null}
 

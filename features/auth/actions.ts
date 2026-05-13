@@ -49,7 +49,12 @@ function normalizeRedirectPath(value: FormDataEntryValue | null) {
 export type AuthActionState = {
   status: "idle" | "error" | "success";
   message?: string;
+  code?: "reset-link-expired";
 };
+
+function getSafeAuthErrorMessage(fallback: string) {
+  return fallback;
+}
 
 const initialAuthState: AuthActionState = {
   status: "idle",
@@ -68,7 +73,7 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    redirectWithError("/login", error.message);
+    redirectWithError("/login", getSafeAuthErrorMessage("We couldn’t sign you in. Check your email and password, then try again."));
   }
 
   const {
@@ -91,7 +96,7 @@ export async function login(formData: FormData) {
     }
 
     await supabase.auth.signOut();
-    redirectWithError("/login", error instanceof Error ? error.message : "Your college could not be verified.");
+    redirectWithError("/login", "We couldn’t complete your sign in. Please try again.");
   }
 
   redirect(redirectTo);
@@ -168,7 +173,7 @@ export async function signupWithState(
   if (error) {
     return {
       status: "error",
-      message: error.message,
+      message: "We couldn’t create your account right now. Please try again.",
     };
   }
 
@@ -187,10 +192,7 @@ export async function signupWithState(
       await supabase.auth.signOut();
       return {
         status: "error",
-        message:
-          profileError instanceof Error
-            ? profileError.message
-            : "UniDrop could not create your profile.",
+        message: "We couldn’t complete your signup right now. Please try again.",
       };
     }
 
@@ -241,7 +243,7 @@ export async function signInWithGoogle(formData: FormData) {
   });
 
   if (error || !data.url) {
-    redirectWithError("/login", error?.message ?? "Google login could not be started.");
+    redirectWithError("/login", "Google sign-in could not be started right now.");
   }
 
   redirect(data.url);
@@ -350,7 +352,8 @@ export async function resetPasswordWithState(
   if (error) {
     return {
       status: "error",
-      message: "Your reset link may have expired. Please request a new link and try again.",
+      message: "This password reset link is no longer valid or has expired.",
+      code: "reset-link-expired",
     };
   }
 

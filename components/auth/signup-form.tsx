@@ -16,6 +16,10 @@ import {
 } from "@/features/auth/colleges";
 import { signInWithGoogle, signupWithState, type AuthActionState } from "@/features/auth/actions";
 
+function getSafeSignupErrorMessage() {
+  return "We couldn’t create your account right now. Please try again.";
+}
+
 type SignupFormProps = {
   serverError?: string;
 };
@@ -45,11 +49,10 @@ export function SignupForm({ serverError }: SignupFormProps) {
     selectedCollege && trimmedEmail && isEmailDomainAllowedByCollege(trimmedEmail, selectedCollege.name),
   );
 
-  const nonDomainServerError =
-    serverError && serverError !== COLLEGE_DOMAIN_ERROR_MESSAGE ? serverError : null;
+  const nonDomainServerError = serverError && serverError !== COLLEGE_DOMAIN_ERROR_MESSAGE ? getSafeSignupErrorMessage() : null;
   const actionError =
     actionState.status === "error" && actionState.message !== COLLEGE_DOMAIN_ERROR_MESSAGE
-      ? actionState.message
+      ? getSafeSignupErrorMessage()
       : null;
   const actionSuccess = actionState.status === "success" ? actionState.message : null;
 

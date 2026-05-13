@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { PasswordInput } from "@/components/auth/password-input";
 import { SubmitButton } from "@/components/auth/submit-button";
+import { Button } from "@/components/ui/button";
 import { resetPasswordWithState, type AuthActionState } from "@/features/auth/actions";
 
 const initialState: AuthActionState = {
@@ -49,7 +50,8 @@ export function ResetPasswordForm() {
     setLocalError(null);
   }
 
-  const feedbackMessage = localError ?? (state.status === "error" ? state.message ?? null : null);
+  const isResetLinkExpired = state.status === "error" && state.code === "reset-link-expired";
+  const feedbackMessage = localError ?? (state.status === "error" && !isResetLinkExpired ? state.message ?? null : null);
 
   return (
     <form action={formAction} onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -101,6 +103,20 @@ export function ResetPasswordForm() {
         >
           {feedbackMessage}
         </p>
+      ) : null}
+
+      {isResetLinkExpired ? (
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-4 text-sm text-foreground" aria-live="polite">
+          <p className="font-medium text-foreground">Reset link expired</p>
+          <p className="mt-2 leading-6 text-muted-foreground">
+            This password reset link is no longer valid or has expired. Please request a new password reset email and try again.
+          </p>
+          <div className="mt-4">
+            <Button className="w-full" size="lg" type="button" onClick={() => router.push("/forgot-password") }>
+              Request new reset link
+            </Button>
+          </div>
+        </div>
       ) : null}
 
       {state.status === "success" ? (
