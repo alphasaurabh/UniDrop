@@ -28,6 +28,10 @@ function getOrigin(headersList: Headers) {
   return headersList.get("origin") ?? "http://localhost:3000";
 }
 
+function buildAuthCallbackUrl(origin: string, next: string) {
+  return `${origin}/auth/callback?next=${encodeURIComponent(next)}`;
+}
+
 function redirectWithError(path: string, message: string): never {
   redirect(`${path}?error=${encodedError(message)}`);
 }
@@ -228,7 +232,7 @@ export async function signInWithGoogle(formData: FormData) {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+      redirectTo: buildAuthCallbackUrl(origin, redirectTo),
       queryParams: {
         hd: approvedColleges[0].allowedEmailDomains[0],
         prompt: "select_account",
@@ -250,43 +254,93 @@ export async function logout() {
 }
 
 export async function requestPasswordReset(formData: FormData) {
+  const state = await requestPasswordResetWithState(initialAuthState, formData);
+
+  if (state.status === "success") {
+    redirect(
+      `/login?message=${encodedError(
+        state.message ?? "Password reset instructions have been sent to your email.",
+      )}`,
+    );
+  }
+
+  redirectWithError("/forgot-password", state.message ?? "We could not send the reset email right now.");
+}
+
+export async function requestPasswordResetWithState(
+  previousState: AuthActionState = initialAuthState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  void previousState;
+
   const supabase = await createClient();
-  const adminSupabase = createAdminClient();
   const headersList = await headers();
   const origin = getOrigin(headersList);
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
 
-  const activeCollege = await findActiveCollegeForEmail(
-    (adminSupabase ?? supabase) as unknown as CollegeLookupClient,
-    email,
-  );
-
-  if (!activeCollege) {
-    redirectWithError("/forgot-password", "Use your Gautam Buddha University email address.");
+  if (!email) {
+    return {
+      status: "error",
+      message: "Please enter the email address linked to your UniDrop account.",
+    };
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?next=/reset-password`,
+    redirectTo: buildAuthCallbackUrl(origin, "/reset-password"),
   });
 
   if (error) {
-    redirectWithError("/forgot-password", error.message);
+    return {
+      status: "error",
+      message: "We could not send the reset email right now. Please try again in a moment.",
+    };
   }
 
-  redirect("/login?message=Check your college email for a password reset link.");
+  return {
+    status: "success",
+    message: "Password reset instructions have been sent to your email.",
+  };
 }
 
 export async function resetPassword(formData: FormData) {
+  const state = await resetPasswordWithState(initialAuthState, formData);
+
+  if (state.status === "success") {
+    redirect(
+      `/login?message=${encodedError(
+        state.message ?? "Your password has been updated. Please log in again.",
+      )}`,
+    );
+  }
+
+  redirectWithError(
+    "/reset-password",
+    state.message ?? "We could not update your password right now.",
+  );
+}
+
+export async function resetPasswordWithState(
+  previousState: AuthActionState = initialAuthState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  void previousState;
+
   const supabase = await createClient();
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
   if (password.length < 8) {
-    redirectWithError("/reset-password", "Password must be at least 8 characters.");
+    return {
+      status: "error",
+      message: "Password must be at least 8 characters.",
+    };
   }
 
   if (password !== confirmPassword) {
-    redirectWithError("/reset-password", "Passwords do not match.");
+    return {
+      status: "error",
+      message: "Passwords do not match.",
+    };
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -294,8 +348,14 @@ export async function resetPassword(formData: FormData) {
   });
 
   if (error) {
-    redirectWithError("/reset-password", error.message);
+    return {
+      status: "error",
+      message: "Your reset link may have expired. Please request a new link and try again.",
+    };
   }
 
-  redirect("/marketplace");
+  return {
+    status: "success",
+    message: "Password updated successfully.",
+  };
 }
