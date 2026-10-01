@@ -25,7 +25,30 @@ function encodedError(message: string) {
 }
 
 function getOrigin(headersList: Headers) {
-  return headersList.get("origin") ?? "http://localhost:3000";
+  return process.env.NEXT_PUBLIC_APP_URL ?? headersList.get("origin") ?? "http://localhost:3000";
+}
+
+function getGoogleOAuthOrigin(headersList: Headers) {
+  const configuredOrigin = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+
+  if (process.env.NODE_ENV === "production") {
+    return configuredOrigin ?? headersList.get("origin") ?? "http://localhost:3000";
+  }
+
+  const requestOrigin = headersList.get("origin")?.trim().replace(/\/$/, "");
+  if (requestOrigin) {
+    return requestOrigin;
+  }
+
+  const forwardedHost = headersList.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const host = forwardedHost ?? headersList.get("host")?.trim();
+  if (host) {
+    const forwardedProtocol = headersList.get("x-forwarded-proto")?.split(",")[0]?.trim();
+    const protocol = forwardedProtocol || (host.startsWith("localhost") ? "http" : "https");
+    return `${protocol}://${host}`;
+  }
+
+  return configuredOrigin ?? "http://localhost:3000";
 }
 
 function buildAuthCallbackUrl(origin: string, next: string) {
@@ -215,6 +238,44 @@ export async function signupWithState(
   };
 }
 
+export async function resendConfirmationEmail(
+  previousState: AuthActionState = initialAuthState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  void previousState;
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+
+  if (!email) {
+    return {
+      status: "error",
+      message: "Enter your university email before requesting another link.",
+    };
+  }
+
+  const supabase = await createClient();
+  const origin = getOrigin(await headers());
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: {
+      emailRedirectTo: `${origin}/auth/callback?next=/marketplace`,
+    },
+  });
+
+  if (error) {
+    return {
+      status: "error",
+      message: "We couldn’t request another verification email. Please wait a moment and try again.",
+    };
+  }
+
+  return {
+    status: "success",
+    message: "Verification email requested. Check your university inbox and spam folder.",
+  };
+}
+
 export async function signup(formData: FormData) {
   const state = await signupWithState(initialAuthState, formData);
 
@@ -228,7 +289,7 @@ export async function signup(formData: FormData) {
 export async function signInWithGoogle(formData: FormData) {
   const supabase = await createClient();
   const headersList = await headers();
-  const origin = getOrigin(headersList);
+  const origin = getGoogleOAuthOrigin(headersList);
   const redirectTo = normalizeRedirectPath(formData.get("redirectTo"));
 
   const { data, error } = await supabase.auth.signInWithOAuth({

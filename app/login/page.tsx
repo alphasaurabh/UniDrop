@@ -35,15 +35,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
 
   return (
-    <Container className="grid min-h-[calc(100vh-6rem)] items-center gap-8 py-10 lg:grid-cols-[1.05fr_0.95fr]">
+    <Container className="grid min-h-[calc(100vh-5rem)] items-center gap-12 pb-24 pt-10 lg:grid-cols-[1.1fr_0.9fr]">
       <div className="hidden lg:block">
-        <div className="surface-elevated p-10">
-          <Badge variant="soft" className="rounded-full px-4 py-2">
-            Premium access
+        <div className="border-y border-border py-10">
+          <Badge variant="soft" className="border-0 bg-primary/10 px-4 py-2 text-primary">
+            Your campus, unlocked
           </Badge>
           <GraduationCap className="mt-8 size-10 text-primary" />
           <h1 className="mt-8 font-display text-5xl font-semibold tracking-tight">
-            Trade with students you can actually recognize.
+            Come for the deal.<br /><span className="text-primary">Stay for the community.</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">
             Log in to save listings, manage posts, and keep your campus marketplace activity in one calm place.
@@ -55,7 +55,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               "Secure sessions",
               "Local exchange",
             ].map((item) => (
-              <div key={item} className="rounded-[1rem] border border-border/70 bg-background/70 p-4 text-sm font-medium shadow-soft backdrop-blur-xl">
+              <div key={item} className="border-t border-border py-4 text-sm font-semibold">
                 <ShieldCheck className="mb-3 size-5 text-primary" />
                 {item}
               </div>
@@ -64,8 +64,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
       </div>
 
-      <Card className="mx-auto w-full max-w-md p-6 sm:p-8">
-        <Badge variant="soft" className="rounded-full px-4 py-2">
+      <Card className="mx-auto w-full max-w-md border-border p-6 shadow-elevated sm:p-8">
+        <Badge variant="soft" className="border-0 bg-primary/10 px-4 py-2 text-primary">
           Welcome back
         </Badge>
         <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight">

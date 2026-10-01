@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { ListingCard } from "@/components/marketplace/listing-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
@@ -38,7 +37,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const soldCount = listings.filter((listing) => listing.status === "sold").length;
 
   return (
-    <Container className="py-8">
+    <Container className="pb-24 pt-8 lg:pb-12">
       {params.message ? (
         <p className="mb-6 surface-panel px-4 py-3 text-sm text-primary">
           {params.message}
@@ -50,10 +49,10 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         </p>
       ) : null}
 
-      <section className="surface-elevated mb-8 overflow-hidden p-6 sm:p-8">
+      <section className="mb-8 border-b border-border pb-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <Badge variant="soft" className="rounded-full px-4 py-2">Seller dashboard</Badge>
+            <Badge variant="soft" className="border-0 bg-primary/10 px-4 py-2 text-primary">Your selling space</Badge>
             <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">Manage your listings.</h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">
               Edit products, mark items as sold, or remove listings that are no longer available.
@@ -65,22 +64,22 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           </Button>
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <Card className="p-5">
+        <div className="mt-8 grid gap-4 border-y border-border py-5 md:grid-cols-3 md:divide-x md:divide-border">
+          <div className="px-1 md:px-5">
             <Package className="size-5 text-primary" />
-            <p className="mt-5 text-3xl font-semibold tracking-tight">{listings.length}</p>
+            <p className="mt-5 font-display text-3xl font-bold tracking-tight">{listings.length}</p>
             <p className="text-sm text-muted-foreground">Total listings</p>
-          </Card>
-          <Card className="p-5">
+          </div>
+          <div className="px-1 md:px-5">
             <Package className="size-5 text-primary" />
-            <p className="mt-5 text-3xl font-semibold tracking-tight">{activeCount}</p>
+            <p className="mt-5 font-display text-3xl font-bold tracking-tight">{activeCount}</p>
             <p className="text-sm text-muted-foreground">Active</p>
-          </Card>
-          <Card className="p-5">
+          </div>
+          <div className="px-1 md:px-5">
             <Package className="size-5 text-primary" />
-            <p className="mt-5 text-3xl font-semibold tracking-tight">{soldCount}</p>
+            <p className="mt-5 font-display text-3xl font-bold tracking-tight">{soldCount}</p>
             <p className="text-sm text-muted-foreground">Sold</p>
-          </Card>
+          </div>
         </div>
       </section>
 

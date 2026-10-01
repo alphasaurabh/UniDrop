@@ -1,298 +1,70 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  Bookmark,
-  ChevronDown,
-  Home,
-  LogOut,
-  Menu,
-  Plus,
-  Search,
-  ShoppingBag,
-  User,
-  X,
-} from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { Bookmark, Compass, Home, LogOut, Search, ShoppingBag, User, X } from "lucide-react";
 
 import { logout } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
-const navItems = [
-  { href: "/marketplace", label: "Marketplace", icon: Home },
-  { href: "/sell", label: "Sell", icon: Plus },
-  { href: "/saved", label: "Saved", icon: Bookmark },
-  { href: "/account", label: "Account", icon: User },
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/marketplace", label: "Explore" },
+  { href: "/saved", label: "Saved" },
 ];
 
-type NavbarClientProps = {
-  isAuthenticated: boolean;
-};
-
-export function NavbarClient({ isAuthenticated }: NavbarClientProps) {
+export function NavbarClient({ isAuthenticated }: { isAuthenticated: boolean }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const isActive = (href: string) => href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const profileMenuRef = useRef<HTMLDivElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-
-  function closeAllMenus() {
-    setIsProfileOpen(false);
-    setIsMobileMenuOpen(false);
-  }
-
+  useEffect(() => setProfileOpen(false), [pathname]);
   useEffect(() => {
-    closeAllMenus();
-  }, [pathname, searchParams]);
-
-  useEffect(() => {
-    function handleOutsideClick(event: MouseEvent) {
-      const target = event.target as Node;
-
-      if (profileMenuRef.current && !profileMenuRef.current.contains(target)) {
-        setIsProfileOpen(false);
-      }
-
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
-        setIsMobileMenuOpen(false);
-      }
-    }
-
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        closeAllMenus();
-      }
-    }
-
-    document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-      document.removeEventListener("keydown", handleEscape);
+    const close = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) setProfileOpen(false);
     };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
   }, []);
 
   return (
     <>
-      <header className="sticky top-4 z-50 hidden lg:block">
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-md">
         <Container>
-          <div className="glass-nav relative flex items-center justify-between px-5 py-3">
-            <Link className="flex items-center gap-3 font-semibold tracking-tight" href="/">
-              <Image src="/logo.svg" alt="UniDrop" width={40} height={40} priority className="size-10 shrink-0 object-contain" />
-              <span className="font-display text-lg">UniDrop</span>
+          <div className="flex h-[72px] items-center gap-5">
+            <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label="UniDrop home">
+              <span className="grid size-9 rotate-3 place-items-center rounded-xl bg-primary text-lg font-bold text-primary-foreground transition-transform group-hover:rotate-0">U</span>
+              <span className="font-display text-lg font-bold tracking-tight">UniDrop<span className="text-primary">.</span></span>
             </Link>
-
-            <nav className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  className="rounded-full px-3 py-2 transition-colors hover:bg-muted/60 hover:text-foreground"
-                  href={item.href}
-                >
-                  {item.label}
-                </Link>
-              ))}
+            <form action="/marketplace" className="hidden max-w-md flex-1 lg:block">
+              <label className="relative block">
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <input name="q" placeholder="Search your campus" className="h-10 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" />
+              </label>
+            </form>
+            <nav className="hidden items-center gap-1 lg:flex">
+              {links.map((link) => <Link key={link.href} href={link.href} className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-muted ${isActive(link.href) ? "text-foreground" : "text-muted-foreground"}`}>{link.label}</Link>)}
             </nav>
-
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
+            <div className="ml-auto flex items-center gap-2">
+              <Link href="/sell" className="hidden h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground shadow-soft transition hover:-translate-y-0.5 hover:shadow-elevated sm:flex"><ShoppingBag className="size-4" /> Sell something</Link>
               {isAuthenticated ? (
-                <div className="relative" ref={profileMenuRef}>
-                  <button
-                    type="button"
-                    onClick={() => setIsProfileOpen((prev) => !prev)}
-                    aria-haspopup="menu"
-                    aria-label="Open profile menu"
-                    className="list-none flex cursor-pointer items-center gap-2 rounded-2xl border border-border/70 bg-card/88 px-3 py-2 text-sm font-medium shadow-soft backdrop-blur-md transition-colors hover:bg-muted/40"
-                  >
-                    <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <User className="size-4" />
-                    </span>
-                    <span>Profile</span>
-                    <ChevronDown className={`size-3.5 text-muted-foreground transition-transform ${isProfileOpen ? "rotate-180" : ""}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {isProfileOpen ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 4, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.985 }}
-                        transition={{ duration: 0.14, ease: "easeOut" }}
-                        className="absolute right-0 top-full mt-3 w-56 origin-top-right rounded-3xl border border-border/70 bg-card/96 p-2 shadow-soft backdrop-blur-md"
-                      >
-                        <div className="grid gap-1">
-                          <Link
-                            className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm transition hover:bg-muted/70"
-                            href="/profile"
-                            onClick={closeAllMenus}
-                          >
-                            <User className="size-4" />
-                            My Profile
-                          </Link>
-                          <Link
-                            className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm transition hover:bg-muted/70"
-                            href="/account"
-                            onClick={closeAllMenus}
-                          >
-                            <ShoppingBag className="size-4" />
-                            Seller Dashboard
-                          </Link>
-                          <Link
-                            className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm transition hover:bg-muted/70"
-                            href="/saved"
-                            onClick={closeAllMenus}
-                          >
-                            <Bookmark className="size-4" />
-                            Saved Listings
-                          </Link>
-                          <div className="rounded-2xl border border-border/60 bg-background/50 p-1">
-                            <ThemeToggle className="w-full justify-between rounded-xl border-0 bg-transparent px-3 py-2.5 shadow-none hover:bg-muted/70" showLabel />
-                          </div>
-                          <div className="border-t border-border/50" />
-                          <form action={logout} className="p-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              type="submit"
-                              className="w-full justify-start gap-2"
-                              onClick={closeAllMenus}
-                            >
-                              <LogOut className="size-4" />
-                              Log out
-                            </Button>
-                          </form>
-                        </div>
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
+                <div ref={profileRef} className="relative">
+                  <button type="button" aria-label="Open profile menu" aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)} className="grid size-10 place-items-center rounded-xl border border-border bg-card transition hover:border-primary/50">{profileOpen ? <X className="size-4" /> : <User className="size-4" />}</button>
+                  {profileOpen ? <div className="absolute right-0 top-12 w-52 rounded-2xl border border-border bg-card p-2 shadow-elevated"><Link href="/profile" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-muted"><User className="size-4" /> My profile</Link><Link href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-muted"><ShoppingBag className="size-4" /> My listings</Link><Link href="/saved" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-muted"><Bookmark className="size-4" /> Saved items</Link><form action={logout} className="mt-1 border-t border-border pt-1"><button type="submit" className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-destructive hover:bg-destructive/10"><LogOut className="size-4" /> Log out</button></form></div> : null}
                 </div>
-              ) : (
-                <>
-                  <Button asChild href="/login" variant="outline" size="sm">
-                    Log in
-                  </Button>
-                  <Button asChild href="/signup" size="sm">
-                    Sign up
-                  </Button>
-                </>
-              )}
+              ) : <Button asChild href="/login" variant="outline" size="sm">Log in</Button>}
             </div>
           </div>
         </Container>
       </header>
-
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/98 backdrop-blur-sm lg:hidden">
-        <Container>
-          <div className="flex items-center justify-between gap-3 px-4 py-3">
-            <Link className="flex items-center gap-2 font-semibold" href="/">
-              <Image src="/logo.svg" alt="UniDrop" width={32} height={32} priority className="size-8 shrink-0 object-contain" />
-            </Link>
-
-            <div className="flex flex-1 items-center justify-center gap-2">
-              <span className="font-display text-sm font-semibold">UniDrop</span>
-            </div>
-
-            <div className="flex items-center gap-1" ref={mobileMenuRef}>
-              <ThemeToggle className="h-9 px-2.5 py-2" />
-              <button
-                type="button"
-                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                aria-haspopup="menu"
-                aria-label="Open mobile menu"
-                className="rounded-lg p-2 transition hover:bg-muted/70"
-              >
-                {isMobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-              </button>
-
-              <AnimatePresence>
-                {isMobileMenuOpen ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 4, scale: 0.985 }}
-                    transition={{ duration: 0.14, ease: "easeOut" }}
-                    className="absolute right-0 top-full mt-2 w-64 origin-top-right rounded-2xl border border-border/70 bg-card/98 p-3 shadow-soft backdrop-blur-md"
-                  >
-                    <div className="grid gap-2">
-                      <Link
-                        className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted/70"
-                        href="/marketplace"
-                        onClick={closeAllMenus}
-                      >
-                        <Search className="size-4" />
-                        Browse marketplace
-                      </Link>
-                      <Link
-                        className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted/70"
-                        href="/sell"
-                        onClick={closeAllMenus}
-                      >
-                        <ShoppingBag className="size-4" />
-                        Sell an item
-                      </Link>
-                      <Link
-                        className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted/70"
-                        href="/saved"
-                        onClick={closeAllMenus}
-                      >
-                        <Bookmark className="size-4" />
-                        Saved items
-                      </Link>
-                      <div className="rounded-lg border border-border/60 bg-background/50 p-1">
-                        <ThemeToggle className="w-full justify-between rounded-lg border-0 bg-transparent px-2 py-2 shadow-none hover:bg-muted/70" showLabel />
-                      </div>
-                      {isAuthenticated ? (
-                        <>
-                          <Link
-                            className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted/70"
-                            href="/account"
-                            onClick={closeAllMenus}
-                          >
-                            <User className="size-4" />
-                            My listings
-                          </Link>
-                          <form action={logout} className="mt-2 border-t border-border/70 pt-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              type="submit"
-                              className="w-full justify-start gap-2"
-                              onClick={closeAllMenus}
-                            >
-                              <LogOut className="size-4" />
-                              Log out
-                            </Button>
-                          </form>
-                        </>
-                      ) : (
-                        <div className="mt-2 grid grid-cols-2 gap-2 border-t border-border/70 pt-2">
-                          <Button asChild href="/login" variant="outline" size="sm">
-                            Log in
-                          </Button>
-                          <Button asChild href="/signup" size="sm">
-                            Sign up
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-            </div>
-          </div>
-        </Container>
-      </header>
-
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden">
+        <nav className="mx-auto grid max-w-md grid-cols-5">
+          {[{ href: "/", label: "Home", icon: Home }, { href: "/marketplace", label: "Explore", icon: Compass }, { href: "/sell", label: "Sell", icon: ShoppingBag }, { href: "/saved", label: "Saved", icon: Bookmark }, { href: isAuthenticated ? "/profile" : "/login", label: "Profile", icon: User }].map((item) => <Link key={item.label} href={item.href} className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] font-bold ${isActive(item.href) ? "text-primary" : "text-muted-foreground"}`}><item.icon className="size-5" />{item.label}</Link>)}
+        </nav>
+      </div>
     </>
   );
 }

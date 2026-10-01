@@ -1,7 +1,7 @@
 "use client";
 
 import { Chrome, MailCheck } from "lucide-react";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 
 import { PasswordInput } from "@/components/auth/password-input";
 import { SubmitButton } from "@/components/auth/submit-button";
@@ -14,7 +14,12 @@ import {
   getEmailDomain,
   isEmailDomainAllowedByCollege,
 } from "@/features/auth/colleges";
-import { signInWithGoogle, signupWithState, type AuthActionState } from "@/features/auth/actions";
+import {
+  resendConfirmationEmail,
+  signInWithGoogle,
+  signupWithState,
+  type AuthActionState,
+} from "@/features/auth/actions";
 
 function getSafeSignupErrorMessage() {
   return "We couldn’t create your account right now. Please try again.";
@@ -31,8 +36,21 @@ export function SignupForm({ serverError }: SignupFormProps) {
       status: "idle",
     },
   );
+  const [resendState, resendAction] = useActionState<AuthActionState, FormData>(
+    resendConfirmationEmail,
+    { status: "idle" },
+  );
   const [collegeName, setCollegeName] = useState("");
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (actionState.status === "error" || actionState.status === "success") {
+      setPassword("");
+    }
+  }, [actionState.status]);
 
   const selectedCollege = getApprovedCollegeByName(collegeName);
   const trimmedEmail = email.trim().toLowerCase();
@@ -69,9 +87,26 @@ export function SignupForm({ serverError }: SignupFormProps) {
       ) : null}
 
       {actionSuccess ? (
-        <p className="mt-5 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
-          {actionSuccess}
-        </p>
+        <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+          <p>{actionSuccess}</p>
+          <form action={resendAction} className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input name="email" type="hidden" value={email} />
+            <SubmitButton
+              variant="outline"
+              size="sm"
+              pendingText="Requesting link..."
+              className="border-primary/30 bg-transparent text-primary hover:bg-primary/10"
+            >
+              Resend confirmation email
+            </SubmitButton>
+            {resendState.status === "success" ? (
+              <span className="text-xs text-primary/80">{resendState.message}</span>
+            ) : null}
+            {resendState.status === "error" ? (
+              <span className="text-xs text-destructive">{resendState.message}</span>
+            ) : null}
+          </form>
+        </div>
       ) : null}
 
       <form action={signInWithGoogle} className="mt-6">
@@ -88,13 +123,22 @@ export function SignupForm({ serverError }: SignupFormProps) {
       </div>
 
       <form action={formAction} className="space-y-4">
-        <Input name="fullName" autoComplete="name" placeholder="Full name" required />
+        <Input
+          name="fullName"
+          autoComplete="name"
+          placeholder="Full name"
+          value={fullName}
+          onChange={(event) => setFullName(event.target.value)}
+          required
+        />
         <Input
           name="username"
           autoComplete="username"
           placeholder="Username"
           pattern="[A-Za-z0-9_]{3,24}"
           title="Use 3-24 letters, numbers, or underscores."
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
           required
         />
         <Select
@@ -126,6 +170,8 @@ export function SignupForm({ serverError }: SignupFormProps) {
           name="password"
           autoComplete="new-password"
           placeholder="Password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
           required
         />
         {isDomainWarningVisible ? (

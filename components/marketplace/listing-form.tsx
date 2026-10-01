@@ -239,7 +239,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
           </p>
         ) : null}
 
-        <section className="surface-panel p-5 sm:p-7">
+        <section className="border-b border-border pb-8 pt-2 sm:pb-10">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h2 className="font-display text-xl font-semibold tracking-tight">Product photos</h2>
@@ -250,7 +250,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
 
           <div
             className={cn(
-              "rounded-[1rem] border border-dashed border-border/70 bg-background/65 p-3 transition-colors duration-150 ease-out",
+              "rounded-xl border border-dashed border-border bg-card p-3 transition-colors duration-150 ease-out",
               dragActive && "border-primary bg-primary/5",
             )}
             onDragOver={(event) => {
@@ -264,7 +264,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
               addFiles(Array.from(event.dataTransfer.files ?? []));
             }}
           >
-            <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-[1rem] p-6 text-center transition-colors duration-150 ease-out hover:bg-muted/40">
+            <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-lg p-6 text-center transition-colors duration-150 ease-out hover:bg-muted/40">
               <ImagePlus className="size-8 text-primary" />
               <span className="mt-3 text-sm font-medium">Choose product images</span>
               <span className="mt-1 text-xs text-muted-foreground">PNG, JPG, WebP up to 5 MB each</span>
@@ -284,7 +284,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                 <motion.div
                   key={image.id}
                   layout
-                  className="relative overflow-hidden rounded-[1rem] border border-border/70 bg-muted/60"
+                  className="relative overflow-hidden rounded-xl border border-border bg-muted"
                 >
                   <Image
                     src={image.publicUrl}
@@ -311,7 +311,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
-                    className="relative overflow-hidden rounded-[1rem] border border-border/70 bg-muted/60"
+                    className="relative overflow-hidden rounded-xl border border-border bg-muted"
                   >
                     <Image
                       src={preview.url}
@@ -345,13 +345,13 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
               </AnimatePresence>
             </div>
           ) : (
-            <div className="mt-5 rounded-[1rem] border border-dashed border-border/70 bg-background/65 p-6 text-center text-sm text-muted-foreground">
+            <div className="mt-5 rounded-xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
               No photos yet. Add clear, well-lit images to make the listing stand out.
             </div>
           )}
         </section>
 
-        <section className="surface-panel p-5 sm:p-7">
+        <section className="border-b border-border pb-8 pt-2 sm:pb-10">
           <h2 className="font-display text-xl font-semibold tracking-tight">Listing details</h2>
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             <label className="sm:col-span-2">
@@ -379,7 +379,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
                       className={cn(
-                        "rounded-[1rem] border px-4 py-3 text-left text-sm transition-[background-color,border-color,box-shadow,color,transform] duration-150 ease-out",
+                        "rounded-lg border px-4 py-3 text-left text-sm transition-[background-color,border-color,box-shadow,color,transform] duration-150 ease-out",
                         selected
                           ? "border-primary bg-primary/10 text-primary shadow-soft"
                           : "border-border/70 bg-background/60 hover:border-primary/40 hover:bg-primary/5",
@@ -457,8 +457,8 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
                 name="description"
                 defaultValue={listing?.description}
                 maxLength={5000}
-                className={cn(
-                  "min-h-40 w-full rounded-[1rem] border border-border/70 bg-background/75 px-4 py-3 text-sm shadow-soft outline-none transition-[background-color,border-color,box-shadow,color] duration-150 ease-out",
+                  className={cn(
+                    "min-h-40 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none transition-[background-color,border-color,box-shadow,color] duration-150 ease-out",
                   "placeholder:text-muted-foreground/70 focus:ring-2 focus:ring-ring",
                 )}
                 placeholder="Mention condition, included accessories, pickup details, and anything buyers should know."
@@ -470,7 +470,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
       </div>
 
       <aside className="lg:sticky lg:top-28 lg:self-start">
-        <div className="surface-panel p-5">
+        <div className="border border-border bg-card p-5 shadow-soft">
           <h2 className="font-display text-lg font-semibold tracking-tight">Publish checklist</h2>
           <div className="mt-4 space-y-3 text-sm text-muted-foreground">
             <p>Use real photos taken on campus.</p>
@@ -478,7 +478,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
             <p>WhatsApp contact should be reachable for verified GBU students.</p>
           </div>
           {isUploading ? (
-            <div className="mt-5 rounded-[1rem] border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground">
+            <div className="mt-5 rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2 text-foreground">
                 <WandSparkles className="size-4 text-primary" />
                 Uploading photos...
@@ -496,7 +496,7 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
       </aside>
       {/* Mobile sticky publish bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-        <div className="glass-nav pb-safe-bottom px-4 py-3">
+        <div className="border-t border-border bg-card pb-safe-bottom px-4 py-3">
           <div className="mx-auto max-w-3xl">
             <PublishButton isEditing={Boolean(listing)} />
           </div>

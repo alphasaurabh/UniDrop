@@ -70,7 +70,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       )}
 
       {/* Public Identity Section */}
-      <div className="space-y-4 rounded-3xl border border-border/50 bg-card/50 p-6 backdrop-blur">
+      <div className="space-y-4 border-t border-border py-7">
         <h3 className="font-semibold text-foreground">Public Identity</h3>
 
         <div>
@@ -123,7 +123,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       </div>
 
       {/* Academic Info Section */}
-      <div className="space-y-4 rounded-3xl border border-border/50 bg-card/50 p-6 backdrop-blur">
+      <div className="space-y-4 border-t border-border py-7">
         <h3 className="font-semibold text-foreground">Academic Info</h3>
 
         <div className="grid grid-cols-2 gap-4">
@@ -163,7 +163,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       </div>
 
       {/* Social Links Section */}
-      <div className="space-y-4 rounded-3xl border border-border/50 bg-card/50 p-6 backdrop-blur">
+      <div className="space-y-4 border-t border-border py-7">
         <h3 className="font-semibold text-foreground">Social Links</h3>
 
         <div>

@@ -9,7 +9,6 @@ import { ReportDialog } from "@/components/marketplace/report-dialog";
 import { ShareButton } from "@/components/marketplace/share-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { toggleSaveListing } from "@/features/marketplace/actions";
 import { formatPostedTime, formatPrice } from "@/features/marketplace/format";
@@ -133,21 +132,21 @@ export default async function ListingDetailPage({
   const coverImage = listing.images[0]?.publicUrl;
 
   return (
-    <Container className="py-8">
+    <Container className="pb-28 pt-6 lg:pb-12 lg:pt-10">
       {pageParams.message ? (
         <p className="mb-6 surface-panel px-4 py-3 text-sm text-primary">
           {pageParams.message}
         </p>
       ) : null}
 
-      <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
         <section className="space-y-5">
           {/* Mobile swipeable gallery */}
           <div className="lg:hidden">
             <div className="-mx-4 px-4">
-              <div className="snap-x snap-mandatory flex overflow-x-auto gap-3 touch-pan-x">
+              <div className="snap-x snap-mandatory flex gap-3 overflow-x-auto touch-pan-x">
                 {listing.images.map((image) => (
-                  <div key={image.id} className="snap-center flex-shrink-0 w-[86vw] sm:w-[72vw] rounded-2xl overflow-hidden">
+                  <div key={image.id} className="snap-center flex-shrink-0 w-[86vw] overflow-hidden rounded-xl border border-border bg-muted sm:w-[72vw]">
                     <Image
                       src={image.publicUrl}
                       alt={listing.title}
@@ -162,7 +161,7 @@ export default async function ListingDetailPage({
           </div>
 
           {/* Desktop / large image */}
-          <div className="hidden lg:block surface-elevated overflow-hidden">
+          <div className="hidden overflow-hidden rounded-2xl border border-border bg-muted lg:block">
             {coverImage ? (
               <Image
                 src={coverImage}
@@ -170,7 +169,7 @@ export default async function ListingDetailPage({
                 width={1300}
                 height={900}
                 priority
-                className="max-h-[680px] w-full object-cover"
+                  className="max-h-[680px] w-full object-cover transition duration-500 hover:scale-[1.015]"
               />
             ) : (
               <div className="grid aspect-[4/3] place-items-center bg-muted/60">
@@ -188,29 +187,29 @@ export default async function ListingDetailPage({
                   alt={listing.title}
                   width={320}
                   height={240}
-                  className="aspect-square rounded-[1rem] border border-border/70 object-cover shadow-soft"
+                  className="aspect-square rounded-xl border border-border object-cover transition hover:border-primary/60"
                 />
               ))}
             </div>
           ) : null}
 
-          <Card className="p-6 sm:p-7">
-            <h2 className="font-display text-xl font-semibold tracking-tight">Description</h2>
+          <section className="border-t border-border pt-7 sm:pt-9">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">About this item</p>
+            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">Details from the seller</h2>
             <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground sm:text-[15px]">
               {listing.description}
             </p>
-          </Card>
+          </section>
         </section>
 
         <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
-          <Card className="p-6 sm:p-7">
+          <section className="border-y border-border py-7 sm:py-8">
             <div className="mb-4 flex flex-wrap gap-2">
-              <Badge>{formatListingConditionLabel(listing.condition)}</Badge>
-              <Badge variant="soft">{listing.category?.name ?? listing.category_id}</Badge>
-              {listing.is_negotiable ? <Badge variant="soft">Negotiable</Badge> : null}
+              <Badge className="border-0 bg-primary/10 text-primary">{formatListingConditionLabel(listing.condition)}</Badge>
+              <span className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">{listing.category?.name ?? listing.category_id}</span>
             </div>
-            <h1 className="font-display text-3xl font-semibold tracking-tight">{listing.title}</h1>
-            <p className="mt-4 text-4xl font-semibold tracking-tight">{formatPrice(listing.price)}</p>
+            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl">{listing.title}</h1>
+            <p className="mt-5 font-display text-4xl font-bold tracking-tight">{formatPrice(listing.price)}</p>
 
             <div className="mt-6 space-y-3 text-sm text-muted-foreground">
               <p className="flex items-center gap-2">
@@ -232,7 +231,7 @@ export default async function ListingDetailPage({
               </a>
             </div>
 
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="mt-7 flex flex-col gap-3">
               <div className="flex gap-3">
                 <form action={toggleSaveListing.bind(null, listing.id, isSaved)} className="flex-1">
                   <Button type="submit" variant="outline" size="lg" className="w-full">
@@ -252,15 +251,15 @@ export default async function ListingDetailPage({
 
               <ReportDialog listingId={listing.id} listingTitle={listing.title} />
             </div>
-          </Card>
+          </section>
 
-          <Card className="p-6 sm:p-7">
+          <section className="border-b border-border pb-7 pt-1 sm:pb-8">
             <Link
               href={listing.seller?.username ? `/u/${listing.seller.username}` : "#"}
               className="group block"
             >
               <div className="flex items-center gap-3">
-                <div className="grid size-12 place-items-center rounded-full bg-primary text-primary-foreground shadow-soft">
+                <div className="grid size-12 place-items-center rounded-xl bg-foreground text-lg font-bold text-background">
                   {(() => {
                     const name = listing.seller?.full_name || listing.seller?.username;
                     if (!name) return "G";
@@ -284,11 +283,11 @@ export default async function ListingDetailPage({
                 </div>
               </div>
             </Link>
-            <div className="mt-5 flex items-start gap-3 rounded-[1rem] border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground">
+            <div className="mt-5 flex items-start gap-3 border-l-2 border-accent bg-accent/10 p-4 text-sm text-muted-foreground">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
               Only verified Gautam Buddha University students can access UniDrop.
             </div>
-          </Card>
+          </section>
         </aside>
       </div>
 

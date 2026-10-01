@@ -42,10 +42,10 @@ export default async function EditListingPage({
   }
 
   return (
-    <Container className="py-8">
+    <Container className="pb-24 pt-8 lg:pb-12">
       <div className="mb-8">
-        <Badge variant="soft">Edit listing</Badge>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight">Update your product.</h1>
+        <Badge variant="soft" className="border-0 bg-primary/10 text-primary">Edit listing</Badge>
+        <h1 className="mt-4 font-display text-4xl font-bold tracking-tight">Update your product.</h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">
           Refresh photos, price, condition, and campus pickup details.
         </p>

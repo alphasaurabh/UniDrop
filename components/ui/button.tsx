@@ -8,12 +8,12 @@ export type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "glass-btn bg-primary text-primary-foreground shadow-soft md:hover:-translate-y-px active:translate-y-px focus-visible:ring-primary",
+  "bg-primary text-primary-foreground shadow-soft md:hover:-translate-y-px active:translate-y-px focus-visible:ring-primary",
   secondary:
-    "glass-btn bg-card/88 text-foreground shadow-soft md:hover:-translate-y-px active:translate-y-px focus-visible:ring-foreground/40",
+  "border border-border bg-card text-foreground shadow-soft md:hover:-translate-y-px active:translate-y-px focus-visible:ring-foreground/40",
   ghost: "bg-transparent text-foreground hover:bg-muted/70 focus-visible:ring-primary",
   outline:
-    "border border-border/70 bg-card/84 text-foreground shadow-soft backdrop-blur-sm md:hover:-translate-y-px active:translate-y-px hover:bg-card focus-visible:ring-primary",
+  "border border-border bg-transparent text-foreground md:hover:-translate-y-px active:translate-y-px hover:bg-card focus-visible:ring-primary",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -49,9 +49,9 @@ export function Button({
   className,
   children,
   ...props
-}: ButtonProps) {
+  }: ButtonProps) {
   const classes = cn(
-    "inline-flex shrink-0 items-center justify-center rounded-xl font-medium transition-[background-color,border-color,box-shadow,color,opacity,transform] duration-150 ease-out",
+    "inline-flex shrink-0 items-center justify-center rounded-lg font-bold transition-[background-color,border-color,box-shadow,color,opacity,transform] duration-150 ease-out",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:pointer-events-none disabled:opacity-50",
     "touch-optimize reduce-motion",

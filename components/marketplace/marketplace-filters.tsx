@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Filter, Search, SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition, FormEvent } from "react";
 
@@ -52,15 +52,15 @@ export function MarketplaceFilters({ categories }: MarketplaceFiltersProps) {
   }
 
   return (
-    <div className="sticky top-24 z-30 mb-8 surface-panel p-3 sm:p-4">
-      <div className="grid gap-3 lg:grid-cols-[1.15fr_220px_180px_180px]">
+    <div className="sticky top-[72px] z-30 mb-8 border-y border-border bg-background/95 py-3 backdrop-blur-md sm:rounded-2xl sm:border sm:px-3">
+      <div className="grid gap-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_auto]">
         <form onSubmit={handleSearch} className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             name="q"
             defaultValue={searchParams.get("q") ?? ""}
-            className="pl-11"
-            placeholder="Search MacBooks, books, cycles..."
+            className="h-11 rounded-xl border-border bg-card pl-11"
+            placeholder="Search items, sellers, hostels..."
           />
         </form>
         <Select
@@ -68,6 +68,7 @@ export function MarketplaceFilters({ categories }: MarketplaceFiltersProps) {
           onChange={(event) => setFilter("category", event.target.value)}
           disabled={isPending}
           aria-label="Category"
+          className="h-11 rounded-xl border-border bg-card"
         >
           <option value="all">All categories</option>
           {(categories ?? []).map((category) => (
@@ -81,6 +82,7 @@ export function MarketplaceFilters({ categories }: MarketplaceFiltersProps) {
           onChange={(event) => setFilter("condition", event.target.value)}
           disabled={isPending}
           aria-label="Condition"
+          className="h-11 rounded-xl border-border bg-card"
         >
           <option value="all">Any condition</option>
           {LISTING_CONDITIONS.map((condition) => (
@@ -94,12 +96,15 @@ export function MarketplaceFilters({ categories }: MarketplaceFiltersProps) {
           onChange={(event) => setFilter("sort", event.target.value)}
           disabled={isPending}
           aria-label="Sort"
+          className="h-11 rounded-xl border-border bg-card"
         >
           <option value="newest">Newest first</option>
           <option value="price-low">Price low to high</option>
           <option value="price-high">Price high to low</option>
         </Select>
+        <button type="button" className="hidden h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-bold lg:flex"><SlidersHorizontal className="size-4" /> More filters</button>
       </div>
+      <div className="mt-2 flex items-center gap-2 text-xs font-semibold text-muted-foreground lg:hidden"><Filter className="size-3.5" /> Filters update as you browse</div>
     </div>
   );
 }

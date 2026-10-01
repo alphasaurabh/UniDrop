@@ -133,30 +133,30 @@ export default async function MarketplacePage({ searchParams }: MarketplacePageP
   }));
 
   return (
-    <Container className="mobile-safe">
+    <Container className="mobile-safe pb-24 lg:pb-12">
       {params.message ? (
         <p className="mb-6 surface-panel px-4 py-3 text-sm text-primary rounded-xl">
           {params.message}
         </p>
       ) : null}
 
-      <section className="surface-elevated mb-8 overflow-hidden p-5 sm:p-8">
+      <section className="mb-8 border-b border-border pb-8 pt-4 sm:pt-8">
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <Badge variant="soft" className="rounded-full px-3 py-1.5 text-xs">Campus marketplace</Badge>
-            <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl lg:text-6xl">
-              Discover what students are selling.
+            <Badge variant="soft" className="rounded-full border-0 bg-primary/10 px-3 py-1.5 text-xs text-primary">Explore campus</Badge>
+            <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              Useful finds, <span className="text-primary">close by.</span>
             </h1>
             <p className="mt-3 max-w-2xl text-sm sm:text-base text-muted-foreground">
-              Browse verified campus listings, compare prices, save items, and explore a clean marketplace feed.
+              Browse what students are selling, renting, and passing on around campus.
             </p>
           </div>
           <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 lg:grid-cols-1">
-            <Card className="px-3 py-3 sm:px-4 sm:py-4">
+            <Card className="border-border px-3 py-3 shadow-none sm:px-4 sm:py-4">
               <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Results</p>
               <p className="mt-2 text-xl sm:text-2xl font-semibold tracking-tight">{result.pagination.total}</p>
             </Card>
-            <Card className="px-3 py-3 sm:px-4 sm:py-4">
+            <Card className="border-border px-3 py-3 shadow-none sm:px-4 sm:py-4">
               <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Saved</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight">{savedIds.size}</p>
             </Card>

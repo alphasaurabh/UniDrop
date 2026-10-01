@@ -7,18 +7,7 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement>;
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type = "text", ...props }, ref) => {
     return (
-      <input
-        ref={ref}
-        type={type}
-        className={cn(
-          "h-12 w-full rounded-xl border border-input/70 bg-background/88 px-4 text-sm text-foreground shadow-soft transition-colors backdrop-blur-sm",
-          "placeholder:text-muted-foreground/70",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-          className,
-        )}
-        {...props}
-      />
+      <input ref={ref} type={type} className={cn("h-12 w-full rounded-lg border border-input bg-card px-4 text-sm text-foreground transition-colors placeholder:text-muted-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50", className)} {...props} />
     );
   },
 );

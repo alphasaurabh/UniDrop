@@ -26,10 +26,10 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const params = await searchParams;
 
   return (
-    <Container className="grid min-h-[calc(100vh-6rem)] items-center gap-8 py-10 lg:grid-cols-[0.92fr_1.08fr]">
+    <Container className="grid min-h-[calc(100vh-5rem)] items-center gap-12 pb-24 pt-10 lg:grid-cols-[0.9fr_1.1fr]">
       <div className="hidden lg:block">
-        <div className="surface-elevated p-10 text-foreground">
-          <Badge variant="soft" className="rounded-full px-4 py-2">Student access</Badge>
+        <div className="border-y border-border p-10 text-foreground">
+          <Badge variant="soft" className="border-0 bg-primary/10 text-primary">Student access</Badge>
           <ShieldCheck className="mt-8 size-10 text-primary" />
           <h2 className="mt-8 font-display text-5xl font-semibold tracking-tight">
             A cleaner way to buy and sell across campus.
@@ -40,8 +40,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         </div>
       </div>
 
-      <Card className="mx-auto w-full max-w-md p-6 sm:p-8">
-        <Badge variant="soft" className="rounded-full px-4 py-2">Create account</Badge>
+      <Card className="mx-auto w-full max-w-md border-border p-6 shadow-elevated sm:p-8">
+        <Badge variant="soft" className="border-0 bg-primary/10 text-primary">Create account</Badge>
         <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">Start trading with your campus identity.</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Join UniDrop with your student details and start trading locally.
