@@ -1,7 +1,7 @@
 "use client";
 
 import { PackageSearch } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { ListingCard } from "@/components/marketplace/listing-card";
 import { Badge } from "@/components/ui/badge";
@@ -29,15 +29,13 @@ export function ListingsGrid({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset listings when search params change (filters/sort)
   useEffect(() => {
-    // If page param is not in search params, we're on page 1
-    if (!searchParams.get("page")) {
+    if (initialPagination.page === 1) {
       setListings(initialListings);
       setPagination(initialPagination);
       setError(null);
     }
-  }, [searchParams, initialListings, initialPagination]);
+  }, [initialListings, initialPagination]);
 
   const handleLoadMore = useCallback(async () => {
     try {
