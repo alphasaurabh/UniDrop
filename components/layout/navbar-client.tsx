@@ -21,7 +21,6 @@ export function NavbarClient({ isAuthenticated }: { isAuthenticated: boolean }) 
   const profileRef = useRef<HTMLDivElement>(null);
   const isActive = (href: string) => href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  useEffect(() => setProfileOpen(false), [pathname]);
   useEffect(() => {
     const close = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) setProfileOpen(false);

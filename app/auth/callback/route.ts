@@ -15,11 +15,31 @@ type CookieToSet = {
   options: CookieOptions;
 };
 
+function normalizeRedirectPath(value: string | null) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return "/marketplace";
+  }
+
+  if (value.includes("\\") || /[\r\n]/.test(value)) {
+    return "/marketplace";
+  }
+
+  try {
+    const url = new URL(value, "https://unidrop.local");
+    if (url.origin !== "https://unidrop.local") {
+      return "/marketplace";
+    }
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return "/marketplace";
+  }
+}
+
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const authError = requestUrl.searchParams.get("error_description");
-  const next = requestUrl.searchParams.get("next") ?? "/marketplace";
+  const next = normalizeRedirectPath(requestUrl.searchParams.get("next"));
 
   if (authError) {
     return NextResponse.redirect(

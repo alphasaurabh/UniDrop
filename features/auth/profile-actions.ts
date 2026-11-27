@@ -2,9 +2,14 @@
 
 import type { ProfileUpdateData } from "@/features/auth/profile-types";
 import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/features/auth/profile";
 
 export async function getProfile(userId: string) {
-  const supabase = await createClient();
+  const { supabase, user } = await requireUser();
+
+  if (user.id !== userId) {
+    return null;
+  }
 
   const { data, error } = await supabase
     .from("profiles")
@@ -43,7 +48,7 @@ export async function getSellerProfile(sellerId: string) {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id,username,full_name,bio,course,year,college_id")
+    .select("id,username,full_name,bio,course,year")
     .eq("id", sellerId)
     .single();
 
@@ -55,16 +60,32 @@ export async function getSellerProfile(sellerId: string) {
   return data;
 }
 
-export async function updateProfile(userId: string, updates: ProfileUpdateData) {
-  const supabase = await createClient();
+export async function updateProfile(_userId: string, updates: ProfileUpdateData) {
+  const { supabase, user } = await requireUser();
+  const allowedUpdates: ProfileUpdateData = {
+    full_name: updates.full_name,
+    username: updates.username,
+    bio: updates.bio,
+    course: updates.course,
+    year: updates.year,
+    hostel: updates.hostel,
+    linkedin_url: updates.linkedin_url,
+    instagram_username: updates.instagram_username,
+  };
+
+  Object.keys(allowedUpdates).forEach((key) => {
+    if (allowedUpdates[key as keyof ProfileUpdateData] === undefined) {
+      delete allowedUpdates[key as keyof ProfileUpdateData];
+    }
+  });
 
   // Validate username uniqueness if being updated
-  if (updates.username) {
+  if (allowedUpdates.username) {
     const { data: existing } = await supabase
       .from("profiles")
       .select("id")
-      .eq("username", updates.username)
-      .neq("id", userId)
+      .eq("username", allowedUpdates.username)
+      .neq("id", user.id)
       .single();
 
     if (existing) {
@@ -78,10 +99,10 @@ export async function updateProfile(userId: string, updates: ProfileUpdateData) 
   const { error } = await supabase
     .from("profiles")
     .update({
-      ...updates,
+      ...allowedUpdates,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", userId);
+    .eq("id", user.id);
 
   if (error) {
     console.error("Failed to update profile:", error);

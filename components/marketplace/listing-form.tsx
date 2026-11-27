@@ -494,14 +494,6 @@ export function ListingForm({ action, listing, error, categories }: ListingFormP
           </div>
         </div>
       </aside>
-      {/* Mobile sticky publish bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-        <div className="border-t border-border bg-card pb-safe-bottom px-4 py-3">
-          <div className="mx-auto max-w-3xl">
-            <PublishButton isEditing={Boolean(listing)} />
-          </div>
-        </div>
-      </div>
     </motion.form>
   );
 }

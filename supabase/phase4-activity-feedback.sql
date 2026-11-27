@@ -57,4 +57,5 @@ create policy "marketplace_activity_anyone_can_view"
 
 create policy "marketplace_activity_system_can_insert"
   on marketplace_activity for insert
-  with check (true);
+  to authenticated
+  with check (auth.uid() = user_id);

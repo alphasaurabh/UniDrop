@@ -22,3 +22,7 @@ create policy "Public profiles are readable"
 on public.profiles for select
 to anon, authenticated
 using (public_profile = true);
+
+revoke select (role, college_id, verified_seller, public_profile)
+on public.profiles
+from anon;

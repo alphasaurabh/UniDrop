@@ -1,8 +1,7 @@
 "use client";
 
 import { PackageSearch } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 
 import { ListingCard } from "@/components/marketplace/listing-card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +24,6 @@ export function ListingsGrid({
   initialFilters,
   onLoadMore,
 }: ListingsGridProps) {
-  const searchParams = useSearchParams();
   const [listings, setListings] = useState(initialListings);
   const [pagination, setPagination] = useState(initialPagination);
   const [isLoading, setIsLoading] = useState(false);
